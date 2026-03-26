@@ -3,6 +3,9 @@ import requests
 import json
 import os
 import base64
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 app = Flask(__name__)
 
@@ -10,23 +13,15 @@ DIR         = os.path.dirname(os.path.abspath(__file__))
 CONFIG_FILE = os.path.join(DIR, 'config.json')
 
 def load_config():
-    """Load from config.json, fall back to environment variables (for Railway)."""
     try:
-        with open(CONFIG_FILE) as f:
+        with open(CONFIG_FILE, encoding='utf-8') as f:
             cfg = json.load(f)
     except Exception:
         cfg = {}
-
-    # Environment variable overrides (used when deployed to Railway)
-    for key in ['provider',
-                'android_login', 'android_password', 'android_host', 'android_port',
-                'twilio_sid', 'twilio_token', 'twilio_from',
-                'vonage_api_key', 'vonage_api_secret', 'vonage_from',
-                'textbelt_key']:
+    for key in ['provider', 'gmail_address', 'gmail_app_password', 'gmail_subject']:
         env_val = os.environ.get(key.upper())
         if env_val:
             cfg[key] = env_val
-
     return cfg
 
 
@@ -74,151 +69,89 @@ def _generate_icon_png(size, path):
             import shutil; shutil.copy(svg_path, path)
 
 
-# ── SMS endpoint ─────────────────────────────────────────────────────────────
+# ── Send notification ─────────────────────────────────────────────────────────
 
 @app.route('/api/send-sms', methods=['POST'])
-def send_sms():
+def send_notification():
     config  = load_config()
     data    = request.get_json(force=True) or {}
-    phone   = str(data.get('phone', '')).strip()
+    email   = str(data.get('email', '')).strip()
     message = str(data.get('message', '')).strip()
+    subject = str(data.get('subject', config.get('gmail_subject', 'Ажилтны мэдэгдэл'))).strip()
 
-    if not phone or not message:
-        return jsonify({'success': False, 'error': 'Phone and message required'}), 400
+    if not email or not message:
+        return jsonify({'success': False, 'error': 'Email and message required'}), 400
 
-    digits     = phone.replace('+976', '').replace('+', '').replace(' ', '').replace('-', '')
-    full_phone = '+976' + digits
+    provider = config.get('provider', 'gmail')
 
-    provider = config.get('provider', 'android_cloud')
-
-    if provider == 'android_cloud':
-        return send_android_cloud(full_phone, message, config)
-    elif provider == 'android':
-        return send_android_local(full_phone, message, config)
-    elif provider == 'twilio':
-        return send_twilio(full_phone, message, config)
-    elif provider == 'vonage':
-        return send_vonage('976' + digits, message, config)
-    elif provider == 'textbelt':
-        return send_textbelt(full_phone, message, config)
+    if provider == 'gmail':
+        return send_gmail(email, subject, message, config)
     else:
         return jsonify({'success': False, 'error': f'Unknown provider: {provider}'})
 
 
-# ── Android SMS Gateway — CLOUD (works from anywhere, free) ──────────────────
-def send_android_cloud(phone, message, config):
-    """
-    Uses the sms-gateway.app cloud relay.
-    The Android app must have 'Cloud' mode enabled.
-    """
-    login    = config.get('android_login', '')
-    password = config.get('android_password', '')
+# ── Gmail ─────────────────────────────────────────────────────────────────────
 
-    if not login or not password:
+def send_gmail(to_email, subject, message, config):
+    gmail_address  = config.get('gmail_address', '')
+    gmail_password = config.get('gmail_app_password', '')
+
+    if not gmail_address or not gmail_password:
         return jsonify({'success': False,
-                        'error': 'android_login / android_password тохируулаагүй байна.'})
-
-    url         = 'https://api.sms-gateway.app/3rdparty/v1/messages'
-    credentials = base64.b64encode(f'{login}:{password}'.encode()).decode()
-
+                        'error': 'Gmail тохиргоо дутуу байна. Admin → Gmail тохиргоо хэсгийг бөглөнө үү.'})
     try:
-        resp = requests.post(url,
-            headers={'Authorization': f'Basic {credentials}',
-                     'Content-Type': 'application/json'},
-            json={'message': message, 'phoneNumbers': [phone]},
-            timeout=20)
-        if resp.status_code in (200, 201, 202):
-            return jsonify({'success': True})
+        msg = MIMEMultipart()
+        msg['From']    = gmail_address
+        msg['To']      = to_email
+        msg['Subject'] = subject
+        msg.attach(MIMEText(message, 'plain', 'utf-8'))
+
+        with smtplib.SMTP('smtp.gmail.com', 587) as server:
+            server.starttls()
+            server.login(gmail_address, gmail_password)
+            server.sendmail(gmail_address, to_email, msg.as_string())
+
+        return jsonify({'success': True})
+    except smtplib.SMTPAuthenticationError:
+        return jsonify({'success': False,
+                        'error': 'Gmail нэвтрэх алдаа. App Password зөв үү? '
+                                 '(myaccount.google.com → Security → App Passwords)'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
+
+# ── Config save from admin panel ──────────────────────────────────────────────
+
+@app.route('/api/save-config', methods=['POST'])
+def save_config():
+    data = request.get_json(force=True) or {}
+    try:
         try:
-            err = resp.json()
+            with open(CONFIG_FILE) as f:
+                cfg = json.load(f)
         except Exception:
-            err = {}
-        return jsonify({'success': False,
-                        'error': f'Cloud gateway алдаа [{resp.status_code}]: {err.get("message", resp.text)}'})
+            cfg = {}
+        cfg.update(data)
+        with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
+            json.dump(cfg, f, indent=2, ensure_ascii=False)
+        return jsonify({'success': True})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
 
-
-# ── Android SMS Gateway — LOCAL (same WiFi only) ──────────────────────────────
-def send_android_local(phone, message, config):
-    host     = config.get('android_host', '')
-    port     = config.get('android_port', 8080)
-    login    = config.get('android_login', 'sms')
-    password = config.get('android_password', '')
-
-    if not host or not password:
-        return jsonify({'success': False, 'error': 'android_host / android_password тохируулаагүй байна.'})
-
-    url         = f'http://{host}:{port}/api/v1/message'
-    credentials = base64.b64encode(f'{login}:{password}'.encode()).decode()
-    try:
-        resp = requests.post(url,
-            headers={'Authorization': f'Basic {credentials}',
-                     'Content-Type': 'application/json'},
-            json={'message': message, 'phoneNumbers': [phone]},
-            timeout=15)
-        if resp.status_code in (200, 201, 202):
-            return jsonify({'success': True})
-        try:
-            err = resp.json()
-        except Exception:
-            err = {}
-        return jsonify({'success': False,
-                        'error': f'Android gateway алдаа [{resp.status_code}]: {err.get("message", resp.text)}'})
-    except requests.exceptions.ConnectionError:
-        return jsonify({'success': False,
-                        'error': f'Холбогдож чадсангүй ({host}:{port}). Нэг WiFi-д байна уу?'})
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)})
-
-
-# ── Twilio ────────────────────────────────────────────────────────────────────
-def send_twilio(phone, message, config):
-    sid, token, from_ = config.get('twilio_sid'), config.get('twilio_token'), config.get('twilio_from')
-    if not all([sid, token, from_]):
-        return jsonify({'success': False, 'error': 'Twilio тохиргоо дутуу байна.'})
-    try:
-        from twilio.rest import Client
-        msg = Client(sid, token).messages.create(body=message, from_=from_, to=phone)
-        return jsonify({'success': True, 'sid': msg.sid})
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)})
-
-
-# ── Vonage ────────────────────────────────────────────────────────────────────
-def send_vonage(to, message, config):
-    key, secret = config.get('vonage_api_key'), config.get('vonage_api_secret')
-    if not key or not secret:
-        return jsonify({'success': False, 'error': 'Vonage тохиргоо дутуу байна.'})
-    try:
-        resp = requests.post('https://rest.nexmo.com/sms/json',
-            data={'api_key': key, 'api_secret': secret,
-                  'to': to, 'from': config.get('vonage_from', 'Notify'), 'text': message},
-            timeout=15)
-        msg0 = resp.json().get('messages', [{}])[0]
-        if msg0.get('status') == '0':
-            return jsonify({'success': True})
-        return jsonify({'success': False, 'error': f"Vonage: {msg0.get('error-text', '')}"})
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)})
-
-
-# ── TextBelt ──────────────────────────────────────────────────────────────────
-def send_textbelt(phone, message, config):
-    try:
-        resp   = requests.post('https://textbelt.com/text',
-            data={'phone': phone, 'message': message, 'key': config.get('textbelt_key', 'textbelt')},
-            timeout=15)
-        result = resp.json()
-        if result.get('success'):
-            return jsonify({'success': True, 'quotaRemaining': result.get('quotaRemaining')})
-        return jsonify({'success': False, 'error': result.get('error', 'TextBelt error')})
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)})
+@app.route('/api/get-config', methods=['GET'])
+def get_config():
+    cfg = load_config()
+    # Only send non-sensitive fields to frontend
+    return jsonify({
+        'gmail_address': cfg.get('gmail_address', ''),
+        'gmail_subject': cfg.get('gmail_subject', 'Ажилтны мэдэгдэл'),
+        'has_password':  bool(cfg.get('gmail_app_password', '')),
+    })
 
 
 # ── Run ───────────────────────────────────────────────────────────────────────
+
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5500))
+    port = int(os.environ.get('PORT', 7500))
     print(f"\n  ✅  Staff Notification Server → http://localhost:{port}\n")
     app.run(host='0.0.0.0', debug=False, port=port)

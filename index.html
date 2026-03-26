@@ -13,120 +13,50 @@
   <link rel="apple-touch-icon" href="/icon-192.png">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(135deg, #1a237e 0%, #283593 50%, #1565c0 100%);
-      min-height: 100vh;
-      padding: 20px;
+      min-height: 100vh; padding: 20px;
     }
-
     .container { max-width: 1100px; margin: 0 auto; }
-
-    .top-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 20px;
-    }
-
+    .top-bar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
     .top-bar-title { flex: 1; text-align: center; }
-
-    h1 {
-      color: #fff;
-      font-size: 1.8em;
-      margin-bottom: 4px;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    }
-
+    h1 { color: #fff; font-size: 1.8em; margin-bottom: 4px; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
     .subtitle { color: rgba(255,255,255,0.75); font-size: 0.9em; }
-
+    .spacer { width: 120px; }
     .admin-btn {
-      background: rgba(255,255,255,0.15);
-      color: #fff;
-      border: 2px solid rgba(255,255,255,0.3);
-      border-radius: 10px;
-      padding: 10px 16px;
-      cursor: pointer;
-      font-size: 0.9em;
-      font-weight: 600;
-      transition: all 0.2s;
-      white-space: nowrap;
+      background: rgba(255,255,255,0.15); color: #fff;
+      border: 2px solid rgba(255,255,255,0.3); border-radius: 10px;
+      padding: 10px 16px; cursor: pointer; font-size: 0.9em; font-weight: 600;
+      transition: all 0.2s; white-space: nowrap;
     }
     .admin-btn:hover { background: rgba(255,255,255,0.25); }
 
-    .spacer { width: 120px; }
-
-    /* Main card */
-    .card {
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
-      overflow: hidden;
-    }
-
+    .card { background: #fff; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.25); overflow: hidden; }
     table { width: 100%; border-collapse: collapse; }
-
     thead tr { background: linear-gradient(90deg, #1a237e, #1565c0); }
-
-    th {
-      color: #fff;
-      padding: 14px 10px;
-      font-size: 0.85em;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      text-align: center;
-    }
+    th { color: #fff; padding: 14px 10px; font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; }
     th.name-th { text-align: left; padding-left: 20px; }
-
     tbody tr { border-bottom: 1px solid #e8ecf0; transition: background 0.15s; }
     tbody tr:hover { background: #f0f4ff; }
     tbody tr:last-child { border-bottom: none; }
-
     td { padding: 10px; text-align: center; vertical-align: middle; }
     td.name-td { text-align: left; padding-left: 20px; }
 
-    .person-num {
-      display: inline-block;
-      width: 26px; height: 26px;
-      background: #e8ecf0; color: #555;
-      border-radius: 50%;
-      font-size: 0.75em; font-weight: bold;
-      line-height: 26px; text-align: center;
-      margin-right: 8px;
-    }
+    .person-num { display: inline-block; width: 26px; height: 26px; background: #e8ecf0; color: #555; border-radius: 50%; font-size: 0.75em; font-weight: bold; line-height: 26px; text-align: center; margin-right: 8px; }
     .person-name { font-weight: 600; color: #1a237e; font-size: 0.95em; }
-    .person-phone { color: #777; font-size: 0.8em; margin-top: 2px; margin-left: 34px; }
+    .person-email { color: #777; font-size: 0.78em; margin-top: 2px; margin-left: 34px; }
 
     .cb-cell { display: flex; flex-direction: column; align-items: center; gap: 6px; }
-
     .custom-cb { position: relative; width: 28px; height: 28px; cursor: pointer; }
     .custom-cb input { opacity: 0; width: 0; height: 0; position: absolute; }
-    .cb-box {
-      position: absolute; top: 0; left: 0;
-      width: 28px; height: 28px;
-      background: #f0f4ff;
-      border: 2px solid #7986cb;
-      border-radius: 7px;
-      transition: all 0.2s;
-    }
+    .cb-box { position: absolute; top: 0; left: 0; width: 28px; height: 28px; background: #f0f4ff; border: 2px solid #7986cb; border-radius: 7px; transition: all 0.2s; }
     .custom-cb input:checked + .cb-box { background: #3f51b5; border-color: #3f51b5; }
-    .cb-box::after {
-      content: ''; display: none;
-      position: absolute; top: 4px; left: 8px;
-      width: 7px; height: 12px;
-      border: 2px solid white; border-top: none; border-left: none;
-      transform: rotate(45deg);
-    }
+    .cb-box::after { content: ''; display: none; position: absolute; top: 4px; left: 8px; width: 7px; height: 12px; border: 2px solid white; border-top: none; border-left: none; transform: rotate(45deg); }
     .custom-cb input:checked + .cb-box::after { display: block; }
     .cb-box:hover { border-color: #3f51b5; }
 
-    .count-badge {
-      font-size: 0.75em; font-weight: 700;
-      min-width: 22px; height: 22px; line-height: 22px;
-      border-radius: 11px; text-align: center;
-      padding: 0 5px; transition: all 0.3s;
-    }
+    .count-badge { font-size: 0.75em; font-weight: 700; min-width: 22px; height: 22px; line-height: 22px; border-radius: 11px; text-align: center; padding: 0 5px; transition: all 0.3s; }
     .count-zero { background: #e8ecf0; color: #aaa; }
     .count-low  { background: #fff3cd; color: #856404; }
     .count-mid  { background: #ffe0b2; color: #e65100; }
@@ -135,272 +65,162 @@
     .col-0 { background: #e8f5e9; } .col-0:hover { background: #c8e6c9; }
     .col-1 { background: #fff8e1; } .col-1:hover { background: #fff3cd; }
     .col-2 { background: #e3f2fd; } .col-2:hover { background: #bbdefb; }
+    .col-3 { background: #fce4ec; } .col-3:hover { background: #f8bbd0; }
+    .col-4 { background: #ede7f6; } .col-4:hover { background: #d1c4e9; }
+    .col-5 { background: #e0f7fa; } .col-5:hover { background: #b2ebf2; }
+    .col-send { background: #fff; padding: 6px 8px !important; }
+    .send-row-btn { padding: 7px 12px; background: #1a237e; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 0.8em; font-weight: 600; white-space: nowrap; transition: background 0.2s; }
+    .send-row-btn:hover { background: #283593; }
+    .concl-btn { padding: 7px 12px; background: #f57c00; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 0.8em; font-weight: 600; white-space: nowrap; transition: background 0.2s; margin-top: 4px; display: block; width: 100%; }
+    .concl-btn:hover { background: #e65100; }
 
-    .footer-bar {
-      background: #f8f9fa; border-top: 1px solid #e8ecf0;
-      padding: 14px 20px;
-      display: flex; justify-content: space-between; align-items: center;
-      flex-wrap: wrap; gap: 10px;
+    /* Conclusion modal */
+    .concl-modal { background: #fff; border-radius: 20px; padding: 0; max-width: 480px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.4); animation: popIn 0.25s ease; overflow: hidden; }
+    .concl-header { background: linear-gradient(90deg,#1a237e,#1565c0); color: white; padding: 20px 24px; }
+    .concl-header h2 { font-size: 1.15em; margin-bottom: 4px; }
+    .concl-header p  { font-size: 0.85em; opacity: 0.8; word-break: break-all; }
+    .concl-body { padding: 20px 24px; }
+    .concl-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #e8ecf0; }
+    .concl-row:last-child { border-bottom: none; }
+    .concl-cat { font-size: 0.95em; color: #333; }
+    .concl-count { font-size: 1.3em; font-weight: 700; color: #1a237e; background: #e8ecf0; border-radius: 10px; padding: 4px 14px; }
+    .concl-total-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0 0; margin-top: 8px; border-top: 2px solid #1a237e; }
+    .concl-total-row span:first-child { font-weight: 700; color: #1a237e; font-size: 1em; }
+    .concl-total-num { font-size: 1.5em; font-weight: 700; color: #1a237e; }
+    .concl-footer { padding: 14px 24px 20px; display: flex; gap: 10px; }
+    .concl-footer button { flex: 1; padding: 11px; border: none; border-radius: 10px; cursor: pointer; font-size: 0.9em; font-weight: 600; }
+    .btn-print    { background: #1565c0; color: white; }
+    .btn-download { background: #2e7d32; color: white; }
+    .btn-close-c  { background: #e8ecf0; color: #333; }
+
+    /* Print styles */
+    @media print {
+      body * { visibility: hidden; }
+      #printArea, #printArea * { visibility: visible; }
+      #printArea { position: fixed; inset: 0; padding: 40px; font-family: 'Segoe UI', sans-serif; }
+      .no-print { display: none !important; }
     }
+
+    .footer-bar { background: #f8f9fa; border-top: 1px solid #e8ecf0; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
     .totals { font-size: 0.85em; color: #555; display: flex; gap: 20px; flex-wrap: wrap; }
     .totals strong { color: #1a237e; }
-
-    .reset-btn {
-      padding: 8px 18px; background: #e53935; color: white;
-      border: none; border-radius: 8px; cursor: pointer;
-      font-size: 0.85em; font-weight: 600; transition: background 0.2s;
-    }
+    .reset-btn { padding: 8px 18px; background: #e53935; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 0.85em; font-weight: 600; transition: background 0.2s; }
     .reset-btn:hover { background: #c62828; }
 
-    /* ── OVERLAYS ── */
-    .overlay {
-      display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,0.6); z-index: 1000;
-      justify-content: center; align-items: center; padding: 20px;
-    }
+    /* Overlays */
+    .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
     .overlay.active { display: flex; }
 
-    /* SMS modal */
-    .sms-modal {
-      background: #fff; border-radius: 20px; padding: 30px;
-      max-width: 420px; width: 100%;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-      animation: popIn 0.25s ease;
-    }
-    @keyframes popIn {
-      from { transform: scale(0.85); opacity: 0; }
-      to   { transform: scale(1);    opacity: 1; }
-    }
+    /* Email modal */
+    .email-modal { background: #fff; border-radius: 20px; padding: 30px; max-width: 440px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.4); animation: popIn 0.25s ease; }
+    @keyframes popIn { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     .modal-icon { font-size: 2.5em; text-align: center; margin-bottom: 10px; }
-    .sms-modal h2 { text-align: center; color: #1a237e; font-size: 1.2em; margin-bottom: 6px; }
-    .modal-person { text-align: center; color: #555; font-size: 0.9em; margin-bottom: 16px; }
+    .email-modal h2 { text-align: center; color: #1a237e; font-size: 1.2em; margin-bottom: 6px; }
+    .modal-person { text-align: center; color: #555; font-size: 0.9em; margin-bottom: 12px; }
     .modal-person strong { color: #1a237e; }
-    .phone-display {
-      text-align: center; font-size: 1.4em; font-weight: 700;
-      color: #1565c0; background: #e8ecf0;
-      border-radius: 10px; padding: 10px; margin-bottom: 16px; letter-spacing: 2px;
-    }
-    .message-box {
-      background: #f0f4ff; border-left: 4px solid #3f51b5;
-      border-radius: 8px; padding: 14px;
-      font-size: 0.9em; color: #333; line-height: 1.5;
-      margin-bottom: 20px; font-style: italic;
-    }
+    .email-display { text-align: center; font-size: 1em; font-weight: 700; color: #1565c0; background: #e8ecf0; border-radius: 10px; padding: 10px; margin-bottom: 14px; word-break: break-all; }
+    .message-box { background: #f0f4ff; border-left: 4px solid #3f51b5; border-radius: 8px; padding: 14px; font-size: 0.88em; color: #333; line-height: 1.5; margin-bottom: 20px; font-style: italic; }
     .btn-group { display: flex; flex-direction: column; gap: 10px; }
-    .btn {
-      padding: 13px 16px; border: none; border-radius: 10px;
-      cursor: pointer; font-size: 0.95em; font-weight: 600;
-      transition: all 0.2s; text-align: center;
-      text-decoration: none; display: block;
-    }
-    .btn-sms  { background: linear-gradient(90deg,#388e3c,#43a047); color: white; }
-    .btn-sms:hover { filter: brightness(0.9); }
-    .btn-copy { background: #e8ecf0; color: #333; }
+    .btn { padding: 13px 16px; border: none; border-radius: 10px; cursor: pointer; font-size: 0.95em; font-weight: 600; transition: all 0.2s; text-align: center; text-decoration: none; display: block; }
+    .btn-send  { background: linear-gradient(90deg,#388e3c,#43a047); color: white; }
+    .btn-send:hover { filter: brightness(0.9); }
+    .btn-copy  { background: #e8ecf0; color: #333; }
     .btn-copy:hover { background: #d0d7e0; }
     .btn-cancel { background: #ffebee; color: #c62828; }
     .btn-cancel:hover { background: #ffcdd2; }
 
-    /* ── ADMIN PANEL ── */
-    .admin-panel {
-      background: #fff; border-radius: 20px;
-      width: 100%; max-width: 780px; max-height: 90vh;
-      display: flex; flex-direction: column;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-      animation: popIn 0.25s ease;
-      overflow: hidden;
-    }
-
-    .admin-header {
-      background: linear-gradient(90deg, #1a237e, #1565c0);
-      color: white; padding: 18px 24px;
-      display: flex; justify-content: space-between; align-items: center;
-    }
+    /* Admin panel */
+    .admin-panel { background: #fff; border-radius: 20px; width: 100%; max-width: 780px; height: 88vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.4); animation: popIn 0.25s ease; overflow: hidden; }
+    .admin-header { background: linear-gradient(90deg,#1a237e,#1565c0); color: white; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; }
     .admin-header h2 { font-size: 1.15em; }
-    .close-x {
-      background: rgba(255,255,255,0.2); border: none; color: white;
-      width: 32px; height: 32px; border-radius: 50%;
-      font-size: 1.1em; cursor: pointer; transition: background 0.2s;
-    }
+    .close-x { background: rgba(255,255,255,0.2); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; font-size: 1.1em; cursor: pointer; }
     .close-x:hover { background: rgba(255,255,255,0.35); }
-
-    .admin-tabs {
-      display: flex; border-bottom: 2px solid #e8ecf0;
-      background: #f8f9fa;
-    }
-    .tab-btn {
-      flex: 1; padding: 12px 6px;
-      background: none; border: none; cursor: pointer;
-      font-size: 0.82em; font-weight: 600; color: #888;
-      border-bottom: 3px solid transparent; margin-bottom: -2px;
-      transition: all 0.2s;
-    }
-    .tab-btn.active { color: #1a237e; border-bottom-color: #1a237e; }
-    .tab-btn:hover { color: #1a237e; }
-
-    .admin-body { flex: 1; overflow-y: auto; padding: 20px; }
-
+    .admin-tabs { display: flex; border-bottom: 2px solid #e8ecf0; background: #f0f2f5; overflow-x: auto; flex-shrink: 0; min-height: 46px; }
+    .tab-btn { flex-shrink: 0; padding: 12px 10px; background: none; border: none; border-bottom: 3px solid transparent; cursor: pointer; font-size: 0.8em; font-weight: 600; color: #666; margin-bottom: -2px; transition: all 0.2s; white-space: nowrap; }
+    .tab-btn.active { color: #1a237e; border-bottom-color: #1a237e; background: #fff; }
+    .tab-btn:hover { color: #1a237e; background: #e8ecf0; }
+    .admin-body { flex: 1; overflow-y: auto; padding: 20px; min-height: 0; }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
     /* Staff tab */
     .staff-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
-    .staff-row {
-      display: flex; gap: 8px; align-items: center;
-      background: #f8f9fa; border-radius: 10px; padding: 10px;
-    }
-    .staff-num {
-      width: 28px; height: 28px; background: #e8ecf0;
-      border-radius: 50%; text-align: center; line-height: 28px;
-      font-size: 0.8em; color: #666; flex-shrink: 0;
-    }
-    .staff-input {
-      flex: 1; padding: 8px 10px; border: 1.5px solid #ddd;
-      border-radius: 8px; font-size: 0.9em;
-      transition: border-color 0.2s;
-    }
+    .staff-row { display: flex; gap: 8px; align-items: center; background: #f8f9fa; border-radius: 10px; padding: 10px; flex-wrap: wrap; }
+    .staff-fields { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0; }
+    .staff-num { width: 28px; height: 28px; background: #e8ecf0; border-radius: 50%; text-align: center; line-height: 28px; font-size: 0.8em; color: #666; flex-shrink: 0; }
+    .staff-input { flex: 1; padding: 8px 10px; border: 1.5px solid #ddd; border-radius: 8px; font-size: 0.9em; transition: border-color 0.2s; }
     .staff-input:focus { outline: none; border-color: #3f51b5; }
-    .staff-input.phone { max-width: 130px; }
-
-    .del-btn {
-      background: #ffebee; color: #c62828; border: none;
-      width: 30px; height: 30px; border-radius: 8px;
-      cursor: pointer; font-size: 1em; transition: background 0.2s;
-    }
+    .del-btn { background: #ffebee; color: #c62828; border: none; width: 30px; height: 30px; border-radius: 8px; cursor: pointer; font-size: 1em; }
     .del-btn:hover { background: #ffcdd2; }
-
-    .add-person-btn {
-      width: 100%; padding: 10px; background: #e8f5e9;
-      color: #2e7d32; border: 2px dashed #a5d6a7;
-      border-radius: 10px; cursor: pointer; font-size: 0.9em;
-      font-weight: 600; transition: all 0.2s;
-    }
+    .add-person-btn { width: 100%; padding: 10px; background: #e8f5e9; color: #2e7d32; border: 2px dashed #a5d6a7; border-radius: 10px; cursor: pointer; font-size: 0.9em; font-weight: 600; transition: all 0.2s; }
     .add-person-btn:hover { background: #c8e6c9; }
 
     /* Categories tab */
-    .cat-row {
-      display: flex; gap: 10px; align-items: center;
-      background: #f8f9fa; border-radius: 10px; padding: 12px;
-      margin-bottom: 10px;
-    }
-    .cat-emoji-input {
-      width: 54px; padding: 8px; border: 1.5px solid #ddd;
-      border-radius: 8px; font-size: 1.1em; text-align: center;
-    }
-    .cat-label-input, .cat-en-input {
-      flex: 1; padding: 8px 10px; border: 1.5px solid #ddd;
-      border-radius: 8px; font-size: 0.9em;
-    }
-    .cat-emoji-input:focus, .cat-label-input:focus, .cat-en-input:focus {
-      outline: none; border-color: #3f51b5;
-    }
-    .cat-color-btn {
-      width: 34px; height: 34px; border-radius: 8px;
-      border: 2px solid #ddd; cursor: pointer;
-    }
+    .cat-row { display: flex; gap: 10px; align-items: center; background: #f8f9fa; border-radius: 10px; padding: 12px; margin-bottom: 10px; }
+    .cat-emoji-input { width: 54px; padding: 8px; border: 1.5px solid #ddd; border-radius: 8px; font-size: 1.1em; text-align: center; }
+    .cat-label-input, .cat-en-input { flex: 1; padding: 8px 10px; border: 1.5px solid #ddd; border-radius: 8px; font-size: 0.9em; }
+    .cat-emoji-input:focus, .cat-label-input:focus, .cat-en-input:focus { outline: none; border-color: #3f51b5; }
 
     /* Message tab */
+    .msg-vars { background: #f0f4ff; border-radius: 8px; padding: 12px; margin-bottom: 14px; font-size: 0.82em; color: #555; line-height: 1.8; }
+    .msg-vars code { background: #e8ecf0; padding: 1px 5px; border-radius: 4px; font-family: monospace; }
     .msg-label { font-size: 0.85em; color: #666; margin-bottom: 6px; }
-    .msg-vars {
-      background: #f0f4ff; border-radius: 8px; padding: 12px;
-      margin-bottom: 14px; font-size: 0.82em; color: #555; line-height: 1.8;
-    }
-    .msg-vars code {
-      background: #e8ecf0; padding: 1px 5px;
-      border-radius: 4px; font-family: monospace;
-    }
-    .msg-textarea {
-      width: 100%; height: 120px; padding: 12px;
-      border: 1.5px solid #ddd; border-radius: 10px;
-      font-size: 0.9em; line-height: 1.5; resize: vertical;
-    }
+    .msg-textarea { width: 100%; height: 120px; padding: 12px; border: 1.5px solid #ddd; border-radius: 10px; font-size: 0.9em; line-height: 1.5; resize: vertical; }
     .msg-textarea:focus { outline: none; border-color: #3f51b5; }
-    .msg-preview-box {
-      margin-top: 14px; background: #f0f4ff;
-      border-left: 4px solid #3f51b5; border-radius: 8px;
-      padding: 12px; font-size: 0.88em; color: #333;
-      font-style: italic; line-height: 1.5;
-    }
+    .msg-preview-box { margin-top: 14px; background: #f0f4ff; border-left: 4px solid #3f51b5; border-radius: 8px; padding: 12px; font-size: 0.88em; color: #333; font-style: italic; line-height: 1.5; }
+
+    /* Gmail tab */
+    .gmail-form { display: flex; flex-direction: column; gap: 14px; max-width: 420px; }
+    .gmail-label { font-size: 0.85em; color: #555; margin-bottom: 4px; font-weight: 600; }
+    .gmail-input { width: 100%; padding: 10px 12px; border: 1.5px solid #ddd; border-radius: 8px; font-size: 0.9em; }
+    .gmail-input:focus { outline: none; border-color: #3f51b5; }
+    .gmail-hint { font-size: 0.78em; color: #888; margin-top: 4px; line-height: 1.5; }
+    .gmail-status { padding: 10px 14px; border-radius: 8px; font-size: 0.85em; }
+    .gmail-status.ok  { background: #e8f5e9; color: #2e7d32; }
+    .gmail-status.err { background: #ffebee; color: #c62828; }
+    .test-btn { padding: 10px 20px; background: #1565c0; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 0.9em; font-weight: 600; }
+    .test-btn:hover { background: #0d47a1; }
 
     /* Stats tab */
     .stats-table { width: 100%; border-collapse: collapse; font-size: 0.88em; }
-    .stats-table th {
-      background: #1a237e; color: white; padding: 10px 8px;
-      text-align: center; font-size: 0.8em;
-    }
+    .stats-table th { background: #1a237e; color: white; padding: 10px 8px; text-align: center; font-size: 0.8em; }
     .stats-table th:first-child { text-align: left; }
-    .stats-table td {
-      padding: 8px; border-bottom: 1px solid #eee;
-      text-align: center;
-    }
+    .stats-table td { padding: 8px; border-bottom: 1px solid #eee; text-align: center; }
     .stats-table td:first-child { text-align: left; font-weight: 600; color: #1a237e; }
     .stats-table tr:hover { background: #f0f4ff; }
-    .reset-one {
-      background: #ffebee; color: #c62828; border: none;
-      border-radius: 6px; padding: 3px 8px; cursor: pointer;
-      font-size: 0.78em; font-weight: 600;
-    }
+    .reset-one { background: #ffebee; color: #c62828; border: none; border-radius: 6px; padding: 3px 8px; cursor: pointer; font-size: 0.78em; font-weight: 600; }
     .reset-one:hover { background: #ffcdd2; }
+    .count-ctrl { display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .ctrl-btn { width: 24px; height: 24px; border: none; border-radius: 6px; cursor: pointer; font-size: 1em; font-weight: 700; line-height: 1; }
+    .ctrl-minus { background: #ffebee; color: #c62828; }
+    .ctrl-minus:hover { background: #ffcdd2; }
+    .ctrl-plus  { background: #e8f5e9; color: #2e7d32; }
+    .ctrl-plus:hover  { background: #c8e6c9; }
+    .ctrl-num { min-width: 28px; text-align: center; font-weight: 700; font-size: 0.95em; }
 
-    /* Admin save bar */
-    .admin-footer {
-      border-top: 1px solid #e8ecf0;
-      padding: 14px 20px;
-      display: flex; justify-content: flex-end; gap: 10px;
-      background: #f8f9fa;
-    }
-    .save-btn {
-      padding: 10px 24px; background: #1a237e;
-      color: white; border: none; border-radius: 10px;
-      cursor: pointer; font-size: 0.9em; font-weight: 600;
-      transition: background 0.2s;
-    }
+    /* PIN tab */
+    .pin-box-admin { display: flex; flex-direction: column; gap: 12px; max-width: 280px; }
+
+    .admin-footer { border-top: 1px solid #e8ecf0; padding: 14px 20px; display: flex; justify-content: flex-end; gap: 10px; background: #f8f9fa; }
+    .save-btn { padding: 10px 24px; background: #1a237e; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 0.9em; font-weight: 600; }
     .save-btn:hover { background: #283593; }
-    .discard-btn {
-      padding: 10px 18px; background: #e8ecf0;
-      color: #555; border: none; border-radius: 10px;
-      cursor: pointer; font-size: 0.9em; transition: background 0.2s;
-    }
-    .discard-btn:hover { background: #d0d7e0; }
-
-    /* Toast */
-    .toast {
-      display: none; position: fixed;
-      bottom: 30px; left: 50%; transform: translateX(-50%);
-      background: #43a047; color: white;
-      padding: 12px 24px; border-radius: 30px;
-      font-weight: 600; font-size: 0.9em;
-      z-index: 3000; box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-    }
+    .discard-btn { padding: 10px 18px; background: #e8ecf0; color: #555; border: none; border-radius: 10px; cursor: pointer; font-size: 0.9em; }
 
     /* PIN screen */
-    .pin-box {
-      background: #fff; border-radius: 20px; padding: 36px;
-      max-width: 320px; width: 100%; text-align: center;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-      animation: popIn 0.25s ease;
-    }
-    .pin-box h2 { color: #1a237e; margin-bottom: 8px; }
-    .pin-box p { color: #888; font-size: 0.85em; margin-bottom: 20px; }
-    .pin-input {
-      width: 100%; padding: 14px; text-align: center;
-      font-size: 1.5em; letter-spacing: 6px;
-      border: 2px solid #ddd; border-radius: 12px;
-      margin-bottom: 14px;
-    }
+    .pin-screen { background: #fff; border-radius: 20px; padding: 36px; max-width: 320px; width: 100%; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.4); animation: popIn 0.25s ease; }
+    .pin-screen h2 { color: #1a237e; margin-bottom: 8px; }
+    .pin-screen p { color: #888; font-size: 0.85em; margin-bottom: 20px; }
+    .pin-input { width: 100%; padding: 14px; text-align: center; font-size: 1.5em; letter-spacing: 6px; border: 2px solid #ddd; border-radius: 12px; margin-bottom: 14px; }
     .pin-input:focus { outline: none; border-color: #1a237e; }
-    .pin-submit {
-      width: 100%; padding: 12px;
-      background: #1a237e; color: white;
-      border: none; border-radius: 12px;
-      font-size: 1em; font-weight: 600; cursor: pointer;
-    }
+    .pin-submit { width: 100%; padding: 12px; background: #1a237e; color: white; border: none; border-radius: 12px; font-size: 1em; font-weight: 600; cursor: pointer; }
     .pin-error { color: #e53935; font-size: 0.85em; margin-top: 8px; }
+
+    .toast { display: none; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #43a047; color: white; padding: 12px 24px; border-radius: 30px; font-weight: 600; font-size: 0.9em; z-index: 3000; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
 
     @media (max-width: 600px) {
       h1 { font-size: 1.3em; }
       th, td { padding: 8px 5px; font-size: 0.78em; }
       .admin-panel { max-height: 95vh; }
-      .staff-input.phone { max-width: 100px; }
     }
   </style>
 </head>
@@ -410,18 +230,14 @@
     <div class="spacer"></div>
     <div class="top-bar-title">
       <h1>&#128226; Ажилтны Мэдэгдэл Систем</h1>
-      <p class="subtitle">Staff Notification System</p>
+      <p class="subtitle">Staff Notification System &mdash; Gmail</p>
     </div>
     <button class="admin-btn" onclick="openAdmin()">&#9881; Admin</button>
   </div>
 
   <div class="card">
     <table>
-      <thead id="thead">
-        <tr>
-          <th class="name-th"># &nbsp; Нэр &amp; Утас</th>
-        </tr>
-      </thead>
+      <thead id="thead"><tr><th class="name-th"># &nbsp; Нэр &amp; Имэйл</th></tr></thead>
       <tbody id="tbody"></tbody>
     </table>
     <div class="footer-bar">
@@ -431,26 +247,26 @@
   </div>
 </div>
 
-<!-- SMS Overlay -->
-<div class="overlay" id="smsOverlay">
-  <div class="sms-modal">
-    <div class="modal-icon">&#128241;</div>
-    <h2>SMS Мэдэгдэл Илгээх</h2>
+<!-- Email Send Overlay -->
+<div class="overlay" id="emailOverlay">
+  <div class="email-modal">
+    <div class="modal-icon">&#128140;</div>
+    <h2>Gmail Мэдэгдэл Илгээх</h2>
     <p class="modal-person" id="modalDesc"></p>
-    <div class="phone-display" id="phoneDisplay"></div>
+    <div class="email-display" id="emailDisplay"></div>
     <div class="message-box" id="messagePreview"></div>
     <div class="btn-group">
-      <button id="smsBtn" class="btn btn-sms" onclick="sendSMS()">&#128229; SMS Илгээх</button>
+      <button id="sendBtn" class="btn btn-send" onclick="sendEmail()">&#128140; Имэйл Илгээх</button>
       <button class="btn btn-copy" onclick="copyMessage()">&#128203; Мессеж хуулах</button>
       <button class="btn btn-cancel" onclick="cancelCheck()">&#10006; Болих</button>
     </div>
-    <p id="smsError" style="color:#e53935;text-align:center;font-size:0.85em;margin-top:10px;display:none;"></p>
+    <p id="sendError" style="color:#e53935;text-align:center;font-size:0.85em;margin-top:10px;display:none;"></p>
   </div>
 </div>
 
 <!-- PIN Overlay -->
 <div class="overlay" id="pinOverlay">
-  <div class="pin-box">
+  <div class="pin-screen">
     <h2>&#128274; Admin нэвтрэх</h2>
     <p>PIN код оруулна уу</p>
     <input type="password" class="pin-input" id="pinInput" maxlength="6" placeholder="••••"
@@ -467,11 +283,11 @@
       <h2>&#9881; Admin Тохиргоо</h2>
       <button class="close-x" onclick="closeAdmin()">&#10006;</button>
     </div>
-
     <div class="admin-tabs">
       <button class="tab-btn active" onclick="switchTab('staff')">&#128100; Ажилтнууд</button>
       <button class="tab-btn" onclick="switchTab('cats')">&#128196; Баганууд</button>
       <button class="tab-btn" onclick="switchTab('msg')">&#128172; Мессеж</button>
+      <button class="tab-btn" onclick="switchTab('gmail')">&#128140; Gmail</button>
       <button class="tab-btn" onclick="switchTab('stats')">&#128202; Статистик</button>
       <button class="tab-btn" onclick="switchTab('pin')">&#128274; PIN</button>
     </div>
@@ -486,8 +302,9 @@
 
       <!-- CATEGORIES TAB -->
       <div class="tab-panel" id="tab-cats">
-        <p style="color:#888;font-size:0.85em;margin-bottom:14px;">Гурван баганын нэрийг өөрчлөх боломжтой.</p>
+        <p style="color:#888;font-size:0.85em;margin-bottom:14px;">Баганын нэрийг өөрчлөх, нэмэх, устгах боломжтой.</p>
         <div id="catList"></div>
+        <button class="add-person-btn" onclick="addCatRow()" style="margin-top:10px">+ Багана нэмэх</button>
       </div>
 
       <!-- MESSAGE TAB -->
@@ -495,21 +312,54 @@
         <div class="msg-vars">
           <strong>Ашиглах боломжтой хувьсагчид:</strong><br>
           <code>{name}</code> — Ажилтны нэр &nbsp;|&nbsp;
-          <code>{phone}</code> — Утасны дугаар &nbsp;|&nbsp;
+          <code>{email}</code> — Имэйл хаяг &nbsp;|&nbsp;
           <code>{category}</code> — Баганын нэр &nbsp;|&nbsp;
           <code>{count}</code> — Хэдэн дэх удаа
         </div>
-        <p class="msg-label">SMS загвар:</p>
+        <p class="msg-label">Имэйл загвар:</p>
         <textarea class="msg-textarea" id="msgTemplate" oninput="updateMsgPreview()"></textarea>
         <p class="msg-label" style="margin-top:14px">Жишээ харагдац:</p>
         <div class="msg-preview-box" id="msgPreviewBox"></div>
       </div>
 
+      <!-- GMAIL TAB -->
+      <div class="tab-panel" id="tab-gmail">
+        <div class="gmail-form">
+          <div>
+            <p class="gmail-label">&#128140; Gmail хаяг (илгээгч)</p>
+            <input class="gmail-input" id="gmailAddress" type="email" placeholder="yourname@gmail.com">
+          </div>
+          <div>
+            <p class="gmail-label">&#128274; App Password</p>
+            <div style="display:flex;gap:8px;align-items:center;">
+            <input class="gmail-input" id="gmailPassword" type="password" placeholder="xxxx xxxx xxxx xxxx" style="flex:1;">
+            <button type="button" onclick="togglePassVis()" id="passToggle" style="padding:8px 12px;border:1.5px solid #ddd;border-radius:8px;background:#f8f9fa;cursor:pointer;font-size:0.9em;white-space:nowrap;">👁 Харах</button>
+          </div>
+            <p class="gmail-hint">
+              App Password авах заавар:<br>
+              1. <strong>myaccount.google.com</strong> → Security<br>
+              2. 2-Step Verification идэвхжүүлэх<br>
+              3. App Passwords → "Mail" → Generate<br>
+              4. 16 тэмдэгтийн нууц үгийг энд оруулна уу
+            </p>
+          </div>
+          <div>
+            <p class="gmail-label">&#128233; Имэйл гарчиг (Subject)</p>
+            <input class="gmail-input" id="gmailSubject" type="text" placeholder="Ажилтны мэдэгдэл">
+          </div>
+          <div id="gmailStatus"></div>
+          <div style="display:flex;gap:10px;">
+            <button class="save-btn" onclick="saveGmail()">&#10003; Хадгалах</button>
+            <button class="test-btn" onclick="testGmail()">&#9993; Тест имэйл</button>
+          </div>
+        </div>
+      </div>
+
       <!-- STATS TAB -->
       <div class="tab-panel" id="tab-stats">
         <table class="stats-table" id="statsTable"></table>
-        <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
-          <button class="reset-btn" style="font-size:0.85em" onclick="resetAll(); renderStats()">
+        <div style="margin-top:16px;">
+          <button class="reset-btn" style="font-size:0.85em" onclick="resetAll();renderStats()">
             &#x21BA; Бүгдийг дахиулах
           </button>
         </div>
@@ -517,10 +367,8 @@
 
       <!-- PIN TAB -->
       <div class="tab-panel" id="tab-pin">
-        <p style="color:#888;font-size:0.85em;margin-bottom:16px;">
-          Admin панель нэвтрэхэд шаардагдах PIN кодыг өөрчлөх.
-        </p>
-        <div style="display:flex;flex-direction:column;gap:12px;max-width:280px">
+        <p style="color:#888;font-size:0.85em;margin-bottom:16px;">Admin PIN кодыг өөрчлөх.</p>
+        <div class="pin-box-admin">
           <input type="password" class="staff-input" id="newPin1" placeholder="Шинэ PIN" maxlength="6">
           <input type="password" class="staff-input" id="newPin2" placeholder="PIN давтах" maxlength="6">
           <button class="save-btn" style="align-self:flex-start" onclick="changePin()">PIN солих</button>
@@ -528,7 +376,7 @@
         </div>
       </div>
 
-    </div><!-- /admin-body -->
+    </div>
 
     <div class="admin-footer">
       <button class="discard-btn" onclick="closeAdmin()">Болих</button>
@@ -536,6 +384,26 @@
     </div>
   </div>
 </div>
+
+<!-- Conclusion Modal -->
+<div class="overlay" id="conclOverlay">
+  <div class="concl-modal">
+    <div class="concl-header">
+      <h2>&#128202; Дүгнэлт</h2>
+      <p id="conclName"></p>
+      <p id="conclEmail" style="margin-top:2px;"></p>
+    </div>
+    <div class="concl-body" id="conclBody"></div>
+    <div class="concl-footer">
+      <button class="btn-print"    onclick="printConclusion()">&#128438; Хэвлэх</button>
+      <button class="btn-download" onclick="downloadConclusion()">&#11015; Татах</button>
+      <button class="btn-close-c"  onclick="document.getElementById('conclOverlay').classList.remove('active')">&#10006; Хаах</button>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden print area -->
+<div id="printArea" style="display:none"></div>
 
 <div class="toast" id="toast"></div>
 
@@ -548,30 +416,30 @@
 <script>
 /* ── DEFAULTS ── */
 const DEFAULT_PEOPLE = [
-  { name: "Батбаяр",      phone: "99112233" },
-  { name: "Ганзориг",     phone: "88234567" },
-  { name: "Энхбаяр",      phone: "99345678" },
-  { name: "Мөнхбат",      phone: "88456789" },
-  { name: "Доржсүрэн",    phone: "99567890" },
-  { name: "Туяа",          phone: "88678901" },
-  { name: "Нарантуяа",    phone: "99789012" },
-  { name: "Оюунбилэг",    phone: "88890123" },
-  { name: "Должинсүрэн",  phone: "99901234" },
-  { name: "Цэцэгмаа",     phone: "88012345" },
-  { name: "Сарантуяа",    phone: "99123450" },
-  { name: "Болормаа",     phone: "88234560" },
-  { name: "Гантулга",     phone: "99345670" },
-  { name: "Тунгалаг",     phone: "88456780" },
-  { name: "Энхжаргал",    phone: "99567801" },
-  { name: "Номиндари",    phone: "88678012" },
-  { name: "Солонго",      phone: "99789023" },
-  { name: "Өлзийтөгс",   phone: "88890134" },
-  { name: "Нямсүрэн",    phone: "99901245" },
-  { name: "Дэлгэрмаа",   phone: "88012356" },
-  { name: "Бат-Эрдэнэ",  phone: "99123467" },
-  { name: "Пүрэвдорж",   phone: "88234578" },
-  { name: "Отгонбаяр",   phone: "99345689" },
-  { name: "Ариунаа",     phone: "88456790" },
+  { name: "Батбаяр",      email: "batbayar@example.com" },
+  { name: "Ганзориг",     email: "ganzorig@example.com" },
+  { name: "Энхбаяр",      email: "enkhbayar@example.com" },
+  { name: "Мөнхбат",      email: "munkhbat@example.com" },
+  { name: "Доржсүрэн",    email: "dorjsuren@example.com" },
+  { name: "Туяа",          email: "tuyaa@example.com" },
+  { name: "Нарантуяа",    email: "narantuyaa@example.com" },
+  { name: "Оюунбилэг",    email: "oyunbileg@example.com" },
+  { name: "Должинсүрэн",  email: "doljiinsuren@example.com" },
+  { name: "Цэцэгмаа",     email: "tsetsegmaa@example.com" },
+  { name: "Сарантуяа",    email: "sarantuyaa@example.com" },
+  { name: "Болормаа",     email: "bolormaa@example.com" },
+  { name: "Гантулга",     email: "gantulga@example.com" },
+  { name: "Тунгалаг",     email: "tungalag@example.com" },
+  { name: "Энхжаргал",    email: "enkhjargal@example.com" },
+  { name: "Номиндари",    email: "nomindari@example.com" },
+  { name: "Солонго",      email: "solongo@example.com" },
+  { name: "Өлзийтөгс",   email: "ulziitogs@example.com" },
+  { name: "Нямсүрэн",    email: "nyamsuren@example.com" },
+  { name: "Дэлгэрмаа",   email: "delgermaa@example.com" },
+  { name: "Бат-Эрдэнэ",  email: "bat-erdene@example.com" },
+  { name: "Пүрэвдорж",   email: "purevdorj@example.com" },
+  { name: "Отгонбаяр",   email: "otgonbayar@example.com" },
+  { name: "Ариунаа",     email: "ariunaa@example.com" },
 ];
 
 const DEFAULT_CATS = [
@@ -580,18 +448,18 @@ const DEFAULT_CATS = [
   { emoji: "🔧", label: "Хэрэгсэл",                en: "Tools"           },
 ];
 
-const DEFAULT_MSG = "Сайн байна уу, {name}? Та өнөөдөр \"{category}\" шалгалтад хамрагдах шаардлагатай байна. (Мэдэгдэл №{count})";
+const DEFAULT_MSG = "Сайн байна уу, {name}?\n\nТа өнөөдөр \"{category}\" шалгалтад хамрагдах шаардлагатай байна.\n\nЭнэ мэдэгдэл {count}-р удаа явуулж байна.\n\nХүндэтгэсэн,\nАжлын газар";
 const DEFAULT_PIN = "1234";
 
 /* ── STATE ── */
-let people     = JSON.parse(localStorage.getItem("snPeople")   || "null") || DEFAULT_PEOPLE;
-let cats       = JSON.parse(localStorage.getItem("snCats")     || "null") || DEFAULT_CATS;
-let msgTpl     = localStorage.getItem("snMsg")  || DEFAULT_MSG;
-let counts     = JSON.parse(localStorage.getItem("snCounts")   || "{}");
-let adminPin   = localStorage.getItem("snPin")  || DEFAULT_PIN;
+let people   = (JSON.parse(localStorage.getItem("snPeople") || "null") || DEFAULT_PEOPLE)
+                 .map(p => ({ name: p.name || "", email: p.email && p.email !== "undefined" ? p.email : "" }));
+let cats     = JSON.parse(localStorage.getItem("snCats")   || "null") || DEFAULT_CATS;
+let msgTpl   = localStorage.getItem("snMsg")  || DEFAULT_MSG;
+let counts   = JSON.parse(localStorage.getItem("snCounts") || "{}");
+let adminPin = localStorage.getItem("snPin")  || DEFAULT_PIN;
 let pendingCheck = null;
 
-/* ── SAVE TO STORAGE ── */
 function persist() {
   localStorage.setItem("snPeople", JSON.stringify(people));
   localStorage.setItem("snCats",   JSON.stringify(cats));
@@ -600,42 +468,29 @@ function persist() {
   localStorage.setItem("snPin",    adminPin);
 }
 
-/* ── COUNT HELPERS ── */
+/* ── COUNTS ── */
 function getCount(i, c) { return counts[`${i}_${c}`] || 0; }
-function incCount(i, c) {
-  counts[`${i}_${c}`] = getCount(i, c) + 1;
-  localStorage.setItem("snCounts", JSON.stringify(counts));
-}
-function badgeCls(n) {
-  if (n === 0) return "count-zero";
-  if (n <= 2)  return "count-low";
-  if (n <= 5)  return "count-mid";
-  return "count-high";
-}
+function incCount(i, c) { counts[`${i}_${c}`] = getCount(i, c) + 1; localStorage.setItem("snCounts", JSON.stringify(counts)); }
+function badgeCls(n) { return n === 0 ? "count-zero" : n <= 2 ? "count-low" : n <= 5 ? "count-mid" : "count-high"; }
 
 /* ── MAIN TABLE ── */
 function buildTable() {
-  // header
   const thead = document.getElementById("thead");
-  let thHTML = '<tr><th class="name-th"># &nbsp; Нэр &amp; Утас</th>';
-  cats.forEach((cat, ci) => {
-    thHTML += `<th>${cat.emoji} ${cat.label}<br><small>${cat.en}</small></th>`;
-  });
-  thHTML += "</tr>";
+  let thHTML = '<tr><th class="name-th"># &nbsp; Нэр &amp; Имэйл</th>';
+  cats.forEach(cat => { thHTML += `<th>${cat.emoji} ${cat.label}<br><small>${cat.en}</small></th>`; });
+  thHTML += '<th></th></tr>';
   thead.innerHTML = thHTML;
 
-  // rows
   const tbody = document.getElementById("tbody");
   tbody.innerHTML = "";
   people.forEach((p, i) => {
     const tr = document.createElement("tr");
-
     const nameTd = document.createElement("td");
     nameTd.className = "name-td";
     nameTd.innerHTML = `
       <span class="person-num">${i+1}</span>
       <span class="person-name">${escHtml(p.name)}</span>
-      <div class="person-phone">📞 +976 ${escHtml(p.phone)}</div>`;
+      <div class="person-email">&#128140; ${escHtml(p.email)}</div>`;
     tr.appendChild(nameTd);
 
     cats.forEach((cat, ci) => {
@@ -652,26 +507,22 @@ function buildTable() {
         </div>`;
       tr.appendChild(td);
     });
+    // Send + Conclusion button cell
+    const sendTd = document.createElement("td");
+    sendTd.className = "col-send";
+    sendTd.innerHTML = `
+      <button class="send-row-btn" onclick="sendForPerson(${i})">&#128140; Илгээх</button>
+      <button class="concl-btn"    onclick="showConclusion(${i})">&#128202; Дүгнэлт</button>`;
+    tr.appendChild(sendTd);
 
     tbody.appendChild(tr);
-  });
-
-  // events
-  people.forEach((_, i) => {
-    cats.forEach((cat, ci) => {
-      const cb = document.getElementById(`cb_${i}_${ci}`);
-      cb.addEventListener("change", function() {
-        if (this.checked) showSMS(i, ci, this);
-      });
-    });
   });
 
   buildTotals();
 }
 
 function buildTotals() {
-  const div = document.getElementById("totals");
-  div.innerHTML = cats.map((cat, ci) => {
+  document.getElementById("totals").innerHTML = cats.map((cat, ci) => {
     let t = 0; people.forEach((_, i) => { t += getCount(i, ci); });
     return `<span>${cat.emoji} ${cat.en}: <strong>${t}</strong></span>`;
   }).join("");
@@ -685,125 +536,127 @@ function refreshBadge(i, ci) {
   el.className = `count-badge ${badgeCls(c)}`;
 }
 
-/* ── SMS MODAL ── */
-function buildMsg(personIdx, catIdx) {
+/* ── EMAIL MODAL ── */
+
+function sendForPerson(personIdx) {
+  // Collect all checked categories for this person
+  const checkedCats = cats.map((cat, ci) => ({ cat, ci }))
+                          .filter(({ ci }) => {
+                            const cb = document.getElementById(`cb_${personIdx}_${ci}`);
+                            return cb && cb.checked;
+                          });
+
+  if (checkedCats.length === 0) {
+    showToast("⚠️ Доод тал нь нэг нүдийг чагтална уу!");
+    return;
+  }
+
   const p = people[personIdx];
-  const cat = cats[catIdx];
-  const count = getCount(personIdx, catIdx) + 1;
-  return msgTpl
-    .replace(/{name}/g,     p.name)
-    .replace(/{phone}/g,    "+976 " + p.phone)
-    .replace(/{category}/g, cat.label + " (" + cat.en + ")")
-    .replace(/{count}/g,    count);
-}
+  const catLabels = checkedCats.map(({ cat }) => `${cat.emoji} ${cat.label}`).join(", ");
+  const catIdxs   = checkedCats.map(({ ci }) => ci);
 
-function showSMS(personIdx, catIdx, checkbox) {
-  const p   = people[personIdx];
-  const cat = cats[catIdx];
-  const msg = buildMsg(personIdx, catIdx);
+  // Build message — replace {category} with all selected categories
+  const maxCount = Math.max(...catIdxs.map(ci => getCount(personIdx, ci))) + 1;
+  const msg = msgTpl
+    .replace(/{name}/g,       p.name)
+    .replace(/{email}/g,      p.email)
+    .replace(/{category}/g,   catLabels)
+    .replace(/{categories}/g, catLabels)
+    .replace(/{count}/g,      maxCount);
 
-  pendingCheck = { personIdx, catIdx, checkbox, msg, phone: p.phone };
+  pendingCheck = { personIdx, catIdxs, msg, email: p.email };
 
   document.getElementById("modalDesc").innerHTML =
-    `<strong>${escHtml(p.name)}</strong> руу &ldquo;${escHtml(cat.label)}&rdquo; мэдэгдэл`;
-  document.getElementById("phoneDisplay").textContent = `+976 ${p.phone}`;
+    `<strong>${escHtml(p.name)}</strong> руу мэдэгдэл илгээх`;
+  document.getElementById("emailDisplay").textContent = p.email;
   document.getElementById("messagePreview").textContent = msg;
 
-  const btn = document.getElementById("smsBtn");
-  btn.disabled = false;
-  btn.textContent = "📨 SMS Илгээх";
-  document.getElementById("smsError").style.display = "none";
-
-  document.getElementById("smsOverlay").classList.add("active");
+  const btn = document.getElementById("sendBtn");
+  btn.disabled = false; btn.textContent = "📧 Имэйл Илгээх";
+  document.getElementById("sendError").style.display = "none";
+  document.getElementById("emailOverlay").classList.add("active");
 }
 
-async function sendSMS() {
+async function sendEmail() {
   if (!pendingCheck) return;
-  const { personIdx, catIdx, phone, msg } = pendingCheck;
-  const btn = document.getElementById("smsBtn");
-  const errEl = document.getElementById("smsError");
+  const { personIdx, catIdxs, email, msg } = pendingCheck;
+  const btn   = document.getElementById("sendBtn");
+  const errEl = document.getElementById("sendError");
 
-  btn.disabled = true;
-  btn.textContent = "⏳ Илгээж байна...";
+  btn.disabled = true; btn.textContent = "⏳ Илгээж байна...";
   errEl.style.display = "none";
 
   try {
     const resp = await fetch('/api/send-sms', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phone: phone, message: msg })
+      body: JSON.stringify({ email, message: msg })
     });
     const result = await resp.json();
 
     if (result.success) {
-      incCount(personIdx, catIdx);
-      refreshBadge(personIdx, catIdx);
+      // Increment count and uncheck for each selected category
+      catIdxs.forEach(ci => {
+        incCount(personIdx, ci);
+        refreshBadge(personIdx, ci);
+        const cb = document.getElementById(`cb_${personIdx}_${ci}`);
+        if (cb) cb.checked = false;
+      });
       buildTotals();
-      pendingCheck.checkbox.checked = false;
       pendingCheck = null;
-      document.getElementById("smsOverlay").classList.remove("active");
-      const quota = result.quotaRemaining !== undefined ? ` (үлдэгдэл: ${result.quotaRemaining})` : "";
-      showToast("✅ SMS амжилттай илгээгдлээ!" + quota);
+      document.getElementById("emailOverlay").classList.remove("active");
+      showToast("✅ Имэйл амжилттай илгээгдлээ!");
     } else {
-      btn.disabled = false;
-      btn.textContent = "📨 SMS Илгээх";
-      errEl.textContent = "❌ Алдаа: " + (result.error || "Мэдэгдэлгүй алдаа");
+      btn.disabled = false; btn.textContent = "📧 Имэйл Илгээх";
+      errEl.textContent = "❌ " + (result.error || "Алдаа гарлаа");
       errEl.style.display = "block";
     }
   } catch (e) {
-    btn.disabled = false;
-    btn.textContent = "📨 SMS Илгээх";
-    errEl.textContent = "❌ Серверт холбогдох алдаа. server.py ажиллаж байна уу?";
+    btn.disabled = false; btn.textContent = "📧 Имэйл Илгээх";
+    errEl.textContent = "❌ Серверт холбогдож чадсангүй. server.py ажиллаж байна уу?";
     errEl.style.display = "block";
   }
 }
 
 function cancelCheck() {
-  if (pendingCheck) { pendingCheck.checkbox.checked = false; pendingCheck = null; }
-  document.getElementById("smsOverlay").classList.remove("active");
+  pendingCheck = null;
+  document.getElementById("emailOverlay").classList.remove("active");
 }
 
 function copyMessage() {
   if (!pendingCheck) return;
-  const text = pendingCheck.msg;
-  navigator.clipboard.writeText(text).then(() => showToast("📋 Мессеж хуулагдлаа!"))
+  navigator.clipboard.writeText(pendingCheck.msg)
+    .then(() => showToast("📋 Мессеж хуулагдлаа!"))
     .catch(() => {
       const ta = document.createElement("textarea");
-      ta.value = text; document.body.appendChild(ta); ta.select();
+      ta.value = pendingCheck.msg; document.body.appendChild(ta); ta.select();
       document.execCommand("copy"); document.body.removeChild(ta);
       showToast("📋 Мессеж хуулагдлаа!");
     });
 }
 
-/* ── RESET ALL ── */
+/* ── RESET ── */
 function resetAll() {
-  if (!confirm("Бүх тоолуурыг тэглэх үү? (Reset all counts?)")) return;
-  counts = {};
-  localStorage.setItem("snCounts", JSON.stringify(counts));
-  buildTable();
-  showToast("↺ Бүх тоолуурыг дахиуллаа");
+  if (!confirm("Бүх тоолуурыг тэглэх үү?")) return;
+  counts = {}; localStorage.setItem("snCounts", JSON.stringify(counts));
+  buildTable(); showToast("↺ Бүх тоолуурыг дахиуллаа");
 }
 
 /* ── ADMIN ── */
 let adminUnlocked = false;
 
 function openAdmin() {
-  if (adminUnlocked) {
-    showAdminPanel();
-  } else {
-    document.getElementById("pinInput").value = "";
-    document.getElementById("pinError").textContent = "";
-    document.getElementById("pinOverlay").classList.add("active");
-    setTimeout(() => document.getElementById("pinInput").focus(), 100);
-  }
+  if (adminUnlocked) { showAdminPanel(); return; }
+  document.getElementById("pinInput").value = "";
+  document.getElementById("pinError").textContent = "";
+  document.getElementById("pinOverlay").classList.add("active");
+  setTimeout(() => document.getElementById("pinInput").focus(), 100);
 }
 
 function checkPin() {
-  const val = document.getElementById("pinInput").value;
-  if (val === adminPin) {
+  if (document.getElementById("pinInput").value === adminPin) {
     document.getElementById("pinOverlay").classList.remove("active");
-    adminUnlocked = true;
-    showAdminPanel();
+    adminUnlocked = true; showAdminPanel();
   } else {
     document.getElementById("pinError").textContent = "Буруу PIN код!";
     document.getElementById("pinInput").value = "";
@@ -811,133 +664,214 @@ function checkPin() {
 }
 
 function showAdminPanel() {
-  renderStaffTab();
-  renderCatsTab();
-  renderMsgTab();
-  renderStats();
+  renderStaffTab(); renderCatsTab(); renderMsgTab(); renderStats(); loadGmailTab();
   document.getElementById("adminOverlay").classList.add("active");
   switchTab("staff");
 }
 
 function closeAdmin() {
   document.getElementById("adminOverlay").classList.remove("active");
-  adminUnlocked = false; // re-lock on close
+  adminUnlocked = false;
 }
 
 /* ── TABS ── */
+const TAB_NAMES = ["staff","cats","msg","gmail","stats","pin"];
 function switchTab(name) {
   document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
   document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
   document.getElementById("tab-" + name).classList.add("active");
-  const idx = ["staff","cats","msg","stats","pin"].indexOf(name);
-  document.querySelectorAll(".tab-btn")[idx].classList.add("active");
+  document.querySelectorAll(".tab-btn")[TAB_NAMES.indexOf(name)].classList.add("active");
   if (name === "stats") renderStats();
 }
 
 /* ── STAFF TAB ── */
 function renderStaffTab() {
-  const list = document.getElementById("staffList");
-  list.innerHTML = "";
-  people.forEach((p, i) => {
-    list.appendChild(makeStaffRow(i, p.name, p.phone));
-  });
+  const list = document.getElementById("staffList"); list.innerHTML = "";
+  people.forEach((p, i) => list.appendChild(makeStaffRow(i, p.name, p.email)));
 }
 
-function makeStaffRow(i, name, phone) {
-  const div = document.createElement("div");
-  div.className = "staff-row";
-  div.dataset.idx = i;
+function makeStaffRow(i, name, email) {
+  const div = document.createElement("div"); div.className = "staff-row"; div.dataset.idx = i;
+  const safeName  = (name  && name  !== "undefined") ? name  : "";
+  const safeEmail = (email && email !== "undefined") ? email : "";
   div.innerHTML = `
-    <span class="staff-num">${i + 1}</span>
-    <input class="staff-input s-name" placeholder="Нэр" value="${escHtml(name)}">
-    <input class="staff-input phone s-phone" placeholder="Утас (8 орон)" value="${escHtml(phone)}" maxlength="8">
-    <button class="del-btn" onclick="removeStaffRow(this)" title="Устгах">&#10006;</button>`;
+    <span class="staff-num">${i+1}</span>
+    <div class="staff-fields">
+      <input class="staff-input s-name" placeholder="Нэр" value="${escHtml(safeName)}">
+      <input class="staff-input s-email" placeholder="Имэйл хаяг" type="email" value="${escHtml(safeEmail)}">
+    </div>
+    <button class="del-btn" onclick="removeStaffRow(this)">&#10006;</button>`;
   return div;
 }
 
 function addStaffRow() {
   const list = document.getElementById("staffList");
-  const rows = list.querySelectorAll(".staff-row");
-  const i = rows.length;
-  list.appendChild(makeStaffRow(i, "", ""));
-  // re-number
+  list.appendChild(makeStaffRow(list.querySelectorAll(".staff-row").length, "", ""));
   renumberStaff();
 }
 
-function removeStaffRow(btn) {
-  btn.closest(".staff-row").remove();
-  renumberStaff();
-}
+function removeStaffRow(btn) { btn.closest(".staff-row").remove(); renumberStaff(); }
 
 function renumberStaff() {
   document.querySelectorAll("#staffList .staff-row").forEach((row, i) => {
-    row.querySelector(".staff-num").textContent = i + 1;
-    row.dataset.idx = i;
+    row.querySelector(".staff-num").textContent = i+1; row.dataset.idx = i;
   });
 }
 
 /* ── CATS TAB ── */
 function renderCatsTab() {
-  const list = document.getElementById("catList");
-  list.innerHTML = "";
-  cats.forEach((cat, ci) => {
-    const div = document.createElement("div");
-    div.className = "cat-row";
-    div.innerHTML = `
-      <input class="cat-emoji-input c-emoji" value="${escHtml(cat.emoji)}" placeholder="😀" title="Emoji">
-      <input class="cat-label-input c-label" value="${escHtml(cat.label)}" placeholder="Монгол нэр">
-      <input class="cat-en-input c-en"    value="${escHtml(cat.en)}"    placeholder="English name">`;
-    list.appendChild(div);
-  });
+  const list = document.getElementById("catList"); list.innerHTML = "";
+  cats.forEach((cat) => list.appendChild(makeCatRow(cat.emoji, cat.label, cat.en)));
+}
+
+function makeCatRow(emoji, label, en) {
+  const div = document.createElement("div"); div.className = "cat-row";
+  div.innerHTML = `
+    <input class="cat-emoji-input c-emoji" value="${escHtml(emoji)}" placeholder="😀">
+    <input class="cat-label-input c-label" value="${escHtml(label)}" placeholder="Монгол нэр">
+    <input class="cat-en-input c-en"       value="${escHtml(en)}"    placeholder="English name">
+    <button class="del-btn" onclick="removeCatRow(this)" title="Устгах">&#10006;</button>`;
+  return div;
+}
+
+function addCatRow() {
+  document.getElementById("catList").appendChild(makeCatRow("📋", "", ""));
+}
+
+function removeCatRow(btn) {
+  const rows = document.querySelectorAll("#catList .cat-row");
+  if (rows.length <= 1) { showToast("⚠️ Доод тал нь нэг багана байх ёстой!"); return; }
+  btn.closest(".cat-row").remove();
 }
 
 /* ── MSG TAB ── */
-function renderMsgTab() {
-  document.getElementById("msgTemplate").value = msgTpl;
-  updateMsgPreview();
-}
-
+function renderMsgTab() { document.getElementById("msgTemplate").value = msgTpl; updateMsgPreview(); }
 function updateMsgPreview() {
   const tpl = document.getElementById("msgTemplate").value;
-  const preview = tpl
-    .replace(/{name}/g,     people[0]?.name || "Батбаяр")
-    .replace(/{phone}/g,    "+976 " + (people[0]?.phone || "99112233"))
+  document.getElementById("msgPreviewBox").textContent = tpl
+    .replace(/{name}/g,     people[0]?.name  || "Батбаяр")
+    .replace(/{email}/g,    people[0]?.email || "batbayar@example.com")
     .replace(/{category}/g, cats[0]?.label + " (" + (cats[0]?.en || "") + ")")
     .replace(/{count}/g,    "3");
-  document.getElementById("msgPreviewBox").textContent = preview;
+}
+
+/* ── GMAIL TAB ── */
+function togglePassVis() {
+  const inp = document.getElementById("gmailPassword");
+  const btn = document.getElementById("passToggle");
+  if (inp.type === "password") { inp.type = "text"; btn.textContent = "🙈 Нуух"; }
+  else { inp.type = "password"; btn.textContent = "👁 Харах"; }
+}
+
+async function loadGmailTab() {
+  try {
+    const resp = await fetch('/api/get-config');
+    const cfg  = await resp.json();
+    document.getElementById("gmailAddress").value = cfg.gmail_address || "";
+    document.getElementById("gmailSubject").value = cfg.gmail_subject || "Ажилтны мэдэгдэл";
+    document.getElementById("gmailPassword").value = "";
+    document.getElementById("gmailPassword").placeholder = cfg.has_password ? "●●●● ●●●● ●●●● ●●●● (хадгалагдсан)" : "xxxx xxxx xxxx xxxx";
+  } catch(e) {}
+}
+
+async function saveGmail() {
+  const address  = document.getElementById("gmailAddress").value.trim();
+  const password = document.getElementById("gmailPassword").value.trim();
+  const subject  = document.getElementById("gmailSubject").value.trim();
+  const statusEl = document.getElementById("gmailStatus");
+
+  const payload = { provider: "gmail", gmail_address: address, gmail_subject: subject };
+  if (password) payload.gmail_app_password = password;
+
+  try {
+    const resp   = await fetch('/api/save-config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    const result = await resp.json();
+    if (result.success) {
+      statusEl.className = "gmail-status ok";
+      statusEl.textContent = "✅ Gmail тохиргоо хадгалагдлаа!";
+      loadGmailTab();
+    } else {
+      statusEl.className = "gmail-status err";
+      statusEl.textContent = "❌ " + result.error;
+    }
+  } catch(e) {
+    statusEl.className = "gmail-status err";
+    statusEl.textContent = "❌ Серверт холбогдож чадсангүй.";
+  }
+}
+
+async function testGmail() {
+  const address = document.getElementById("gmailAddress").value.trim();
+  if (!address) { showToast("❌ Gmail хаяг оруулна уу"); return; }
+  const statusEl = document.getElementById("gmailStatus");
+  statusEl.className = "gmail-status"; statusEl.textContent = "⏳ Тест имэйл илгээж байна...";
+  try {
+    const resp   = await fetch('/api/send-sms', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: address, message: "Тест имэйл амжилттай хүрлээ! Gmail тохиргоо зөв байна." }) });
+    const result = await resp.json();
+    if (result.success) {
+      statusEl.className = "gmail-status ok"; statusEl.textContent = "✅ Тест имэйл илгээгдлээ! Имэйлээ шалгана уу.";
+    } else {
+      statusEl.className = "gmail-status err"; statusEl.textContent = "❌ " + result.error;
+    }
+  } catch(e) {
+    statusEl.className = "gmail-status err"; statusEl.textContent = "❌ Серверт холбогдож чадсангүй.";
+  }
 }
 
 /* ── STATS TAB ── */
 function renderStats() {
   let html = "<thead><tr><th>Нэр</th>";
   cats.forEach(cat => { html += `<th>${cat.emoji} ${cat.en}</th>`; });
-  html += "<th>Нийт</th><th></th></tr></thead><tbody>";
+  html += "<th>Нийт</th></tr></thead><tbody>";
 
   people.forEach((p, i) => {
-    let rowTotal = 0;
-    let cells = "";
+    let total = 0, cells = "";
     cats.forEach((_, ci) => {
-      const c = getCount(i, ci);
-      rowTotal += c;
-      cells += `<td><span class="count-badge ${badgeCls(c)}">${c}</span></td>`;
+      const c = getCount(i, ci); total += c;
+      cells += `<td>
+        <div class="count-ctrl">
+          <button class="ctrl-btn ctrl-minus" onclick="adjustCount(${i},${ci},-1)">−</button>
+          <span class="ctrl-num" id="scount_${i}_${ci}">${c}</span>
+          <button class="ctrl-btn ctrl-plus"  onclick="adjustCount(${i},${ci},+1)">+</button>
+        </div>
+      </td>`;
     });
     html += `<tr>
-      <td>${escHtml(p.name)}<br><small style="color:#aaa">+976 ${escHtml(p.phone)}</small></td>
+      <td>${escHtml(p.name)}<br><small style="color:#aaa;font-weight:normal">${escHtml(p.email)}</small></td>
       ${cells}
-      <td><strong>${rowTotal}</strong></td>
-      <td><button class="reset-one" onclick="resetPerson(${i})">↺ Дахиулах</button></td>
+      <td><strong id="stotal_${i}">${total}</strong></td>
     </tr>`;
   });
-  html += "</tbody>";
-  document.getElementById("statsTable").innerHTML = html;
+
+  document.getElementById("statsTable").innerHTML = html + "</tbody>";
+}
+
+function adjustCount(i, ci, delta) {
+  const key = `${i}_${ci}`;
+  const newVal = Math.max(0, (counts[key] || 0) + delta);
+  counts[key] = newVal;
+  localStorage.setItem("snCounts", JSON.stringify(counts));
+
+  // Update stats display
+  const el = document.getElementById(`scount_${i}_${ci}`);
+  if (el) el.textContent = newVal;
+
+  // Update total for this row
+  let total = 0;
+  cats.forEach((_, c) => { total += getCount(i, c); });
+  const tot = document.getElementById(`stotal_${i}`);
+  if (tot) tot.textContent = total;
+
+  // Update main table badge
+  refreshBadge(i, ci);
+  buildTotals();
 }
 
 function resetPerson(i) {
-  cats.forEach((_, ci) => { delete counts[`${i}_${ci}`]; });
+  cats.forEach((_, ci) => delete counts[`${i}_${ci}`]);
   localStorage.setItem("snCounts", JSON.stringify(counts));
-  renderStats();
+  renderStats(); buildTotals();
   people.forEach((_, pi) => cats.forEach((_, ci) => refreshBadge(pi, ci)));
-  buildTotals();
   showToast("↺ " + people[i].name + " дахиуллаа");
 }
 
@@ -946,70 +880,152 @@ function changePin() {
   const p1 = document.getElementById("newPin1").value.trim();
   const p2 = document.getElementById("newPin2").value.trim();
   const msg = document.getElementById("pinChangeMsg");
-  if (!p1) { msg.style.color="#e53935"; msg.textContent = "PIN хоосон байна!"; return; }
-  if (p1 !== p2) { msg.style.color="#e53935"; msg.textContent = "PIN таарахгүй байна!"; return; }
-  adminPin = p1;
-  localStorage.setItem("snPin", adminPin);
-  msg.style.color="#2e7d32";
-  msg.textContent = "✔ PIN амжилттай солигдлоо!";
-  document.getElementById("newPin1").value = "";
-  document.getElementById("newPin2").value = "";
+  if (!p1) { msg.style.color="#e53935"; msg.textContent="PIN хоосон байна!"; return; }
+  if (p1 !== p2) { msg.style.color="#e53935"; msg.textContent="PIN таарахгүй байна!"; return; }
+  adminPin = p1; localStorage.setItem("snPin", adminPin);
+  msg.style.color="#2e7d32"; msg.textContent="✔ PIN солигдлоо!";
+  document.getElementById("newPin1").value = document.getElementById("newPin2").value = "";
 }
 
 /* ── SAVE ADMIN ── */
 function saveAdmin() {
   // Staff
-  const rows = document.querySelectorAll("#staffList .staff-row");
   const newPeople = [];
-  rows.forEach(row => {
+  document.querySelectorAll("#staffList .staff-row").forEach(row => {
     const name  = row.querySelector(".s-name").value.trim();
-    const phone = row.querySelector(".s-phone").value.trim();
-    if (name || phone) newPeople.push({ name, phone });
+    const email = row.querySelector(".s-email").value.trim();
+    if (name || email) newPeople.push({ name, email });
   });
   people = newPeople;
 
-  // Categories
-  const catRows = document.querySelectorAll("#catList .cat-row");
-  catRows.forEach((row, ci) => {
-    cats[ci].emoji = row.querySelector(".c-emoji").value.trim() || cats[ci].emoji;
-    cats[ci].label = row.querySelector(".c-label").value.trim() || cats[ci].label;
-    cats[ci].en    = row.querySelector(".c-en").value.trim()    || cats[ci].en;
+  // Categories — rebuild from all rows
+  const newCats = [];
+  document.querySelectorAll("#catList .cat-row").forEach(row => {
+    const emoji = row.querySelector(".c-emoji").value.trim();
+    const label = row.querySelector(".c-label").value.trim();
+    const en    = row.querySelector(".c-en").value.trim();
+    if (label || en) newCats.push({ emoji: emoji || "📋", label: label || en, en: en || label });
   });
+  if (newCats.length > 0) cats = newCats;
 
   // Message
   msgTpl = document.getElementById("msgTemplate").value || DEFAULT_MSG;
 
-  persist();
-  buildTable();
-  closeAdmin();
+  persist(); buildTable(); closeAdmin();
   showToast("✅ Тохиргоо хадгалагдлаа!");
+}
+
+/* ── CONCLUSION ── */
+function showConclusion(personIdx) {
+  const p = people[personIdx];
+  let total = 0;
+  let bodyHTML = '';
+
+  cats.forEach((cat, ci) => {
+    const c = getCount(personIdx, ci);
+    total += c;
+    bodyHTML += `
+      <div class="concl-row">
+        <span class="concl-cat">${cat.emoji} ${cat.label}<br><small style="color:#999">${cat.en}</small></span>
+        <span class="concl-count">${c}</span>
+      </div>`;
+  });
+
+  bodyHTML += `
+    <div class="concl-total-row">
+      <span>&#128200; Нийт дүн</span>
+      <span class="concl-total-num">${total}</span>
+    </div>`;
+
+  document.getElementById("conclName").textContent  = p.name;
+  document.getElementById("conclEmail").textContent = p.email;
+  document.getElementById("conclBody").innerHTML    = bodyHTML;
+  document.getElementById("conclOverlay").classList.add("active");
+}
+
+function buildConclHTML(personIdx) {
+  const p = people[personIdx];
+  const date = new Date().toLocaleDateString('mn-MN');
+  let rows = cats.map((cat, ci) => {
+    const c = getCount(personIdx, ci);
+    return `<tr>
+      <td style="padding:10px 16px;border-bottom:1px solid #eee">${cat.emoji} ${cat.label} (${cat.en})</td>
+      <td style="padding:10px 16px;border-bottom:1px solid #eee;text-align:center;font-weight:700;font-size:1.2em">${c}</td>
+    </tr>`;
+  }).join('');
+  let total = cats.reduce((s,_,ci) => s + getCount(personIdx, ci), 0);
+
+  return `<!DOCTYPE html><html lang="mn"><head><meta charset="UTF-8">
+  <title>Дүгнэлт — ${p.name}</title>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; padding: 40px; max-width: 600px; margin: 0 auto; color: #222; }
+    h1 { color: #1a237e; font-size: 1.5em; margin-bottom: 4px; }
+    .sub { color: #888; font-size: 0.9em; margin-bottom: 24px; }
+    table { width: 100%; border-collapse: collapse; border: 1px solid #e0e0e0; border-radius: 10px; overflow: hidden; }
+    th { background: #1a237e; color: white; padding: 12px 16px; text-align: left; }
+    th:last-child { text-align: center; }
+    .total-row td { background: #e8ecf0; font-weight: 700; font-size: 1.1em; padding: 12px 16px; }
+    .footer { margin-top: 24px; color: #aaa; font-size: 0.8em; text-align: right; }
+  </style></head><body>
+  <h1>&#128202; Дүгнэлт</h1>
+  <p class="sub">${p.name} &nbsp;|&nbsp; ${p.email} &nbsp;|&nbsp; ${date}</p>
+  <table>
+    <thead><tr><th>Ангилал</th><th>Тоо</th></tr></thead>
+    <tbody>
+      ${rows}
+      <tr class="total-row"><td>&#128200; Нийт дүн</td><td style="text-align:center">${total}</td></tr>
+    </tbody>
+  </table>
+  <p class="footer">Ажилтны Мэдэгдэл Систем &mdash; ${date}</p>
+  </body></html>`;
+}
+
+function printConclusion() {
+  const overlay = document.getElementById("conclOverlay");
+  const activeIdx = window._conclIdx;
+  // Find current person index from displayed name
+  const name = document.getElementById("conclName").textContent;
+  const idx = people.findIndex(p => p.name === name);
+  if (idx < 0) return;
+
+  const html = buildConclHTML(idx);
+  const win = window.open('', '_blank', 'width=700,height=600');
+  win.document.write(html);
+  win.document.close();
+  win.focus();
+  setTimeout(() => { win.print(); }, 400);
+}
+
+function downloadConclusion() {
+  const name = document.getElementById("conclName").textContent;
+  const idx = people.findIndex(p => p.name === name);
+  if (idx < 0) return;
+
+  const html = buildConclHTML(idx);
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `dugnel-${name}-${new Date().toISOString().slice(0,10)}.html`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast("✅ Файл татагдлаа!");
 }
 
 /* ── UTILS ── */
 function escHtml(s) {
-  return String(s)
-    .replace(/&/g,"&amp;").replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 }
-
 function showToast(msg) {
-  const t = document.getElementById("toast");
-  t.textContent = msg; t.style.display = "block";
-  setTimeout(() => { t.style.display = "none"; }, 2500);
+  const t = document.getElementById("toast"); t.textContent = msg; t.style.display = "block";
+  setTimeout(() => { t.style.display = "none"; }, 2800);
 }
 
-/* ── BACKDROP CLOSES ── */
-document.getElementById("smsOverlay").addEventListener("click", e => {
-  if (e.target === e.currentTarget) cancelCheck();
-});
-document.getElementById("pinOverlay").addEventListener("click", e => {
-  if (e.target === e.currentTarget) document.getElementById("pinOverlay").classList.remove("active");
-});
-document.getElementById("adminOverlay").addEventListener("click", e => {
-  if (e.target === e.currentTarget) closeAdmin();
-});
+/* ── BACKDROP CLOSE ── */
+document.getElementById("emailOverlay").addEventListener("click", e => { if (e.target === e.currentTarget) cancelCheck(); });
+document.getElementById("pinOverlay").addEventListener("click",   e => { if (e.target === e.currentTarget) document.getElementById("pinOverlay").classList.remove("active"); });
+document.getElementById("adminOverlay").addEventListener("click", e => { if (e.target === e.currentTarget) closeAdmin(); });
 
-/* ── INIT ── */
 buildTable();
 </script>
 </body>

@@ -1,4 +1,4 @@
-const CACHE = 'staff-notify-v1';
+const CACHE = 'staff-notify-v4';
 const ASSETS = ['/', '/manifest.json', '/icon.svg', '/icon-192.png', '/icon-512.png'];
 
 self.addEventListener('install', e => {
