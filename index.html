@@ -134,6 +134,17 @@
     .custom-cb input:checked + .cb-box::after { display: block; }
     .cb-box:hover { border-color: #1d4ed8; }
 
+    /* ── COMMENT INPUT ── */
+    .cb-comment {
+      display: none; width: 90px; padding: 4px 6px;
+      border: 1px solid #cbd5e1; border-radius: 4px;
+      font-size: 0.72em; resize: none; height: 38px;
+      color: #334155; background: #f8fafc; line-height: 1.4;
+      transition: border-color 0.15s;
+    }
+    .cb-comment.show { display: block; }
+    .cb-comment:focus { outline: none; border-color: #1d4ed8; background: #fff; }
+
     /* ── COUNT BADGE ── */
     .count-badge {
       font-size: 0.7em; font-weight: 700;
@@ -886,6 +897,7 @@ let msgTpl   = localStorage.getItem("snMsg")  || DEFAULT_MSG;
 let counts   = JSON.parse(localStorage.getItem("snCounts") || "{}");
 let adminPin = localStorage.getItem("snPin")  || DEFAULT_PIN;
 let history  = JSON.parse(localStorage.getItem("snHistory") || "[]");
+let comments = {};
 let pendingCheck = null;
 
 function persist() {
@@ -901,6 +913,13 @@ function persist() {
 function getCount(i, c) { return counts[`${i}_${c}`] || 0; }
 function incCount(i, c) { counts[`${i}_${c}`] = getCount(i, c) + 1; localStorage.setItem("snCounts", JSON.stringify(counts)); }
 function badgeCls(n) { return n === 0 ? "count-zero" : n <= 2 ? "count-low" : n <= 5 ? "count-mid" : "count-high"; }
+
+function toggleComment(i, ci, checked) {
+  const el = document.getElementById(`cmt_${i}_${ci}`);
+  if (!el) return;
+  if (checked) { el.classList.add('show'); el.focus(); }
+  else { el.classList.remove('show'); el.value = ''; delete comments[`${i}_${ci}`]; }
+}
 
 /* ── MAIN TABLE ── */
 function buildTable() {
@@ -929,10 +948,11 @@ function buildTable() {
       td.innerHTML = `
         <div class="cb-cell">
           <label class="custom-cb">
-            <input type="checkbox" id="cb_${i}_${ci}">
+            <input type="checkbox" id="cb_${i}_${ci}" onchange="toggleComment(${i},${ci},this.checked)">
             <span class="cb-box"></span>
           </label>
           <span class="count-badge ${badgeCls(c)}" id="badge_${i}_${ci}">${c}</span>
+          <textarea class="cb-comment" id="cmt_${i}_${ci}" placeholder="Тайлбар..." oninput="comments['${i}_${ci}']=this.value"></textarea>
         </div>`;
       tr.appendChild(td);
     });
@@ -1077,10 +1097,15 @@ function sendSelected() {
     const catIdxs  = checkedCats.map(({ ci }) => ci);
     const catLabels = checkedCats.map(({ cat }) => `${cat.emoji} ${cat.label}`).join(', ');
     const maxCount = Math.max(...catIdxs.map(ci => getCount(i, ci))) + 1;
-    const msg = msgTpl
+    let msg = msgTpl
       .replace(/{name}/g, p.name).replace(/{email}/g, p.email)
       .replace(/{category}/g, catLabels).replace(/{categories}/g, catLabels)
       .replace(/{count}/g, maxCount);
+    const catComments = checkedCats.map(({ cat, ci }) => {
+      const c = (comments[`${i}_${ci}`] || '').trim();
+      return c ? `${cat.emoji} ${cat.en}: ${c}` : '';
+    }).filter(Boolean);
+    if (catComments.length > 0) msg += '\n\nТайлбар:\n' + catComments.join('\n');
     bulkQueue.push({ personIdx: i, catIdxs, msg, email: p.email, name: p.name, checkedCats, status: 'pending' });
   });
 
@@ -1103,7 +1128,10 @@ function renderBulkModal() {
 
   bodyEl.innerHTML = bulkQueue.map((item, idx) => {
     const statusIcon = item.status === 'pending' ? '⏳' : item.status === 'sending' ? '🔄' : item.status === 'done' ? '✅' : '❌';
-    const chips = item.checkedCats.map(({ cat }) => `<span class="bulk-rec-cat">${cat.emoji} ${cat.en}</span>`).join('');
+    const chips = item.checkedCats.map(({ cat, ci }) => {
+      const c = (comments[`${item.personIdx}_${ci}`] || '').trim();
+      return `<span class="bulk-rec-cat">${cat.emoji} ${cat.en}${c ? ' — ' + escHtml(c) : ''}</span>`;
+    }).join('');
     return `<div class="bulk-recipient" id="bulk-row-${idx}">
       <div class="bulk-rec-info">
         <div class="bulk-rec-name">${escHtml(item.name)}</div>
@@ -1139,6 +1167,9 @@ async function executeBulkSend() {
           refreshBadge(item.personIdx, ci);
           const cb = document.getElementById(`cb_${item.personIdx}_${ci}`);
           if (cb) cb.checked = false;
+          const cmtEl = document.getElementById(`cmt_${item.personIdx}_${ci}`);
+          if (cmtEl) { cmtEl.value = ''; cmtEl.classList.remove('show'); }
+          delete comments[`${item.personIdx}_${ci}`];
           history.push({ ts, personName: p.name, personEmail: p.email, catEn: cats[ci]?.en || '', catLabel: cats[ci]?.label || '', catEmoji: cats[ci]?.emoji || '' });
         });
         localStorage.setItem('snHistory', JSON.stringify(history));
@@ -1172,6 +1203,7 @@ function resetAll() {
   if (!confirm("Бүх тоолуурыг тэглэх үү?")) return;
   counts = {}; localStorage.setItem("snCounts", JSON.stringify(counts));
   history = []; localStorage.setItem("snHistory", JSON.stringify(history));
+  comments = {};
   buildTable(); showToast("↺ Бүх тоолуурыг дахиуллаа");
 }
 
