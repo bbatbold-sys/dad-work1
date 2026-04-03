@@ -1200,9 +1200,22 @@ function renderStats() {
 
 function adjustCount(i, ci, delta) {
   const key = `${i}_${ci}`;
-  const newVal = Math.max(0, (counts[key] || 0) + delta);
+  const oldVal = counts[key] || 0;
+  const newVal = Math.max(0, oldVal + delta);
+  if (newVal === oldVal) return;
   counts[key] = newVal;
   localStorage.setItem("snCounts", JSON.stringify(counts));
+
+  // Sync history
+  const p   = people[i];
+  const cat = cats[ci];
+  if (delta > 0) {
+    history.push({ ts: new Date().toISOString(), personName: p.name, personEmail: p.email, catEn: cat?.en || '', catLabel: cat?.label || '', catEmoji: cat?.emoji || '' });
+  } else {
+    const idx = history.map((h,j) => h.catEn === cat?.en && h.personName === p.name ? j : -1).filter(j => j >= 0).pop();
+    if (idx !== undefined) history.splice(idx, 1);
+  }
+  localStorage.setItem("snHistory", JSON.stringify(history));
 
   // Update stats display
   const el = document.getElementById(`scount_${i}_${ci}`);
@@ -1217,6 +1230,11 @@ function adjustCount(i, ci, delta) {
   // Update main table badge
   refreshBadge(i, ci);
   buildTotals();
+
+  // Refresh report if open
+  if (document.getElementById('reportOverlay').classList.contains('active')) {
+    rebuildHistTabs();
+  }
 }
 
 function resetPerson(i) {
@@ -1423,6 +1441,17 @@ function openReport() {
 
 function closeReport() {
   document.getElementById('reportOverlay').classList.remove('active');
+}
+
+function rebuildHistTabs() {
+  const tabsEl = document.getElementById('histTabs');
+  if (!tabsEl) return;
+  const activeCi = [...tabsEl.querySelectorAll('.hist-tab')].findIndex(b => b.classList.contains('active'));
+  tabsEl.innerHTML = cats.map((cat, ci) => {
+    const cnt = history.filter(h => h.catEn === cat.en).length;
+    return `<button class="hist-tab${ci===activeCi?' active':''}" onclick="switchHistTab(${ci})">${cat.emoji} ${cat.en} <span style="background:#e2e8f0;border-radius:4px;padding:1px 6px;margin-left:4px;font-size:0.9em">${cnt}</span></button>`;
+  }).join('');
+  switchHistTab(activeCi >= 0 ? activeCi : 0);
 }
 
 function switchHistTab(ci) {
