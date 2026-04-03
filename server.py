@@ -1,31 +1,52 @@
-from flask import Flask, request, jsonify, send_from_directory
-import requests
+from flask import Flask, request, jsonify, send_from_directory, session, redirect
 import json
 import os
-import base64
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 app = Flask(__name__)
+app.secret_key = os.environ.get('SECRET_KEY', 'local-dev-secret-change-in-prod')
 
-DIR         = os.path.dirname(os.path.abspath(__file__))
-CONFIG_FILE = os.path.join(DIR, 'config.json')
-
-def load_config():
-    try:
-        with open(CONFIG_FILE, encoding='utf-8') as f:
-            cfg = json.load(f)
-    except Exception:
-        cfg = {}
-    for key in ['provider', 'gmail_address', 'gmail_app_password', 'gmail_subject']:
-        env_val = os.environ.get(key.upper())
-        if env_val:
-            cfg[key] = env_val
-    return cfg
+DIR          = os.path.dirname(os.path.abspath(__file__))
+CONFIG_FILE  = '/tmp/config.json' if os.environ.get('VERCEL') else os.path.join(DIR, 'config.json')
+SITE_PASS    = os.environ.get('SITE_PASSCODE', '1234')
 
 
-# ── Static files ─────────────────────────────────────────────────────────────
+# ── Auth ──────────────────────────────────────────────────────────────────────
+
+PUBLIC = {'/login', '/api/verify-passcode', '/manifest.json', '/sw.js', '/icon.svg'}
+
+@app.before_request
+def require_auth():
+    path = request.path
+    if path in PUBLIC or path.startswith('/icon-'):
+        return
+    if not session.get('auth'):
+        return redirect('/login')
+
+@app.route('/login')
+def login_page():
+    if session.get('auth'):
+        return redirect('/')
+    return send_from_directory(DIR, 'login.html')
+
+@app.route('/api/verify-passcode', methods=['POST'])
+def verify_passcode():
+    data = request.get_json(force=True) or {}
+    if data.get('passcode') == SITE_PASS:
+        session['auth'] = True
+        session.permanent = True
+        return jsonify({'success': True})
+    return jsonify({'success': False, 'error': 'Буруу нууц код!'})
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect('/login')
+
+
+# ── Static files ──────────────────────────────────────────────────────────────
 
 @app.route('/')
 def index():
@@ -69,58 +90,19 @@ def _generate_icon_png(size, path):
             import shutil; shutil.copy(svg_path, path)
 
 
-# ── Send notification ─────────────────────────────────────────────────────────
+# ── Config ────────────────────────────────────────────────────────────────────
 
-@app.route('/api/send-sms', methods=['POST'])
-def send_notification():
-    config  = load_config()
-    data    = request.get_json(force=True) or {}
-    email   = str(data.get('email', '')).strip()
-    message = str(data.get('message', '')).strip()
-    subject = str(data.get('subject', config.get('gmail_subject', 'Ажилтны мэдэгдэл'))).strip()
-
-    if not email or not message:
-        return jsonify({'success': False, 'error': 'Email and message required'}), 400
-
-    provider = config.get('provider', 'gmail')
-
-    if provider == 'gmail':
-        return send_gmail(email, subject, message, config)
-    else:
-        return jsonify({'success': False, 'error': f'Unknown provider: {provider}'})
-
-
-# ── Gmail ─────────────────────────────────────────────────────────────────────
-
-def send_gmail(to_email, subject, message, config):
-    gmail_address  = config.get('gmail_address', '')
-    gmail_password = config.get('gmail_app_password', '')
-
-    if not gmail_address or not gmail_password:
-        return jsonify({'success': False,
-                        'error': 'Gmail тохиргоо дутуу байна. Admin → Gmail тохиргоо хэсгийг бөглөнө үү.'})
+def load_config():
     try:
-        msg = MIMEMultipart()
-        msg['From']    = gmail_address
-        msg['To']      = to_email
-        msg['Subject'] = subject
-        msg.attach(MIMEText(message, 'plain', 'utf-8'))
-
-        with smtplib.SMTP('smtp.gmail.com', 587) as server:
-            server.starttls()
-            server.login(gmail_address, gmail_password)
-            server.sendmail(gmail_address, to_email, msg.as_string())
-
-        return jsonify({'success': True})
-    except smtplib.SMTPAuthenticationError:
-        return jsonify({'success': False,
-                        'error': 'Gmail нэвтрэх алдаа. App Password зөв үү? '
-                                 '(myaccount.google.com → Security → App Passwords)'})
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)})
-
-
-# ── Config save from admin panel ──────────────────────────────────────────────
+        with open(CONFIG_FILE, encoding='utf-8') as f:
+            cfg = json.load(f)
+    except Exception:
+        cfg = {}
+    for key in ['provider', 'gmail_address', 'gmail_app_password', 'gmail_subject']:
+        env_val = os.environ.get(key.upper())
+        if env_val:
+            cfg[key] = env_val
+    return cfg
 
 @app.route('/api/save-config', methods=['POST'])
 def save_config():
@@ -141,7 +123,6 @@ def save_config():
 @app.route('/api/get-config', methods=['GET'])
 def get_config():
     cfg = load_config()
-    # Only send non-sensitive fields to frontend
     return jsonify({
         'gmail_address': cfg.get('gmail_address', ''),
         'gmail_subject': cfg.get('gmail_subject', 'Ажилтны мэдэгдэл'),
@@ -149,9 +130,48 @@ def get_config():
     })
 
 
+# ── Send notification ─────────────────────────────────────────────────────────
+
+@app.route('/api/send-sms', methods=['POST'])
+def send_notification():
+    config  = load_config()
+    data    = request.get_json(force=True) or {}
+    email   = str(data.get('email', '')).strip()
+    message = str(data.get('message', '')).strip()
+    subject = str(data.get('subject', config.get('gmail_subject', 'Ажилтны мэдэгдэл'))).strip()
+
+    if not email or not message:
+        return jsonify({'success': False, 'error': 'Email and message required'}), 400
+
+    if config.get('provider', 'gmail') == 'gmail':
+        return send_gmail(email, subject, message, config)
+    return jsonify({'success': False, 'error': 'Unknown provider'})
+
+def send_gmail(to_email, subject, message, config):
+    gmail_address  = config.get('gmail_address', '')
+    gmail_password = config.get('gmail_app_password', '')
+    if not gmail_address or not gmail_password:
+        return jsonify({'success': False, 'error': 'Gmail тохиргоо дутуу байна.'})
+    try:
+        msg = MIMEMultipart()
+        msg['From']    = gmail_address
+        msg['To']      = to_email
+        msg['Subject'] = subject
+        msg.attach(MIMEText(message, 'plain', 'utf-8'))
+        with smtplib.SMTP('smtp.gmail.com', 587) as server:
+            server.starttls()
+            server.login(gmail_address, gmail_password)
+            server.sendmail(gmail_address, to_email, msg.as_string())
+        return jsonify({'success': True})
+    except smtplib.SMTPAuthenticationError:
+        return jsonify({'success': False, 'error': 'Gmail нэвтрэх алдаа. App Password зөв үү?'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
+
 # ── Run ───────────────────────────────────────────────────────────────────────
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 7500))
-    print(f"\n  ✅  Staff Notification Server → http://localhost:{port}\n")
+    print(f"\n  Staff Notification Server -> http://localhost:{port}\n")
     app.run(host='0.0.0.0', debug=False, port=port)

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Нэвтрэх — Staff Notification System</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0d1117;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .login-card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 360px;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.6);
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .logo-icon {
+      width: 42px; height: 42px;
+      background: #1d4ed8;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2em;
+      flex-shrink: 0;
+    }
+    .logo-text h1 {
+      color: #f0f6fc;
+      font-size: 0.95em;
+      font-weight: 700;
+    }
+    .logo-text p {
+      color: #7d8590;
+      font-size: 0.72em;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 2px;
+    }
+    .divider {
+      border: none;
+      border-top: 1px solid #21262d;
+      margin-bottom: 28px;
+    }
+    label {
+      display: block;
+      font-size: 0.8em;
+      font-weight: 600;
+      color: #8b949e;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+    input[type="password"] {
+      width: 100%;
+      padding: 11px 14px;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 7px;
+      color: #f0f6fc;
+      font-size: 1.1em;
+      letter-spacing: 6px;
+      text-align: center;
+      transition: border-color 0.15s;
+      margin-bottom: 16px;
+    }
+    input[type="password"]:focus {
+      outline: none;
+      border-color: #1d4ed8;
+      box-shadow: 0 0 0 3px rgba(29,78,216,0.2);
+    }
+    input[type="password"]::placeholder {
+      letter-spacing: 2px;
+      color: #484f58;
+      font-size: 0.85em;
+    }
+    button {
+      width: 100%;
+      padding: 11px;
+      background: #1d4ed8;
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      font-size: 0.95em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+      letter-spacing: 0.3px;
+    }
+    button:hover { background: #1e40af; }
+    button:disabled { background: #21262d; color: #484f58; cursor: not-allowed; }
+    .error-msg {
+      display: none;
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: #1c0a0a;
+      border: 1px solid #6e1a1a;
+      border-radius: 6px;
+      color: #f87171;
+      font-size: 0.84em;
+      text-align: center;
+    }
+    .footer-note {
+      margin-top: 24px;
+      text-align: center;
+      color: #484f58;
+      font-size: 0.75em;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <div class="logo">
+      <div class="logo-icon">&#128226;</div>
+      <div class="logo-text">
+        <h1>Staff Notification System</h1>
+        <p>Ажилтны Мэдэгдэл Систем</p>
+      </div>
+    </div>
+    <hr class="divider">
+    <label for="passcode">&#128274; Нэвтрэх код</label>
+    <input type="password" id="passcode" placeholder="••••••" maxlength="20"
+           onkeydown="if(event.key==='Enter') login()">
+    <button id="loginBtn" onclick="login()">Нэвтрэх</button>
+    <div class="error-msg" id="errorMsg"></div>
+    <p class="footer-note">Зөвхөн эрх бүхий хэрэглэгчдэд зориулагдсан</p>
+  </div>
+
+  <script>
+    document.getElementById('passcode').focus();
+
+    async function login() {
+      const passcode = document.getElementById('passcode').value.trim();
+      const btn      = document.getElementById('loginBtn');
+      const errEl    = document.getElementById('errorMsg');
+      if (!passcode) return;
+
+      btn.disabled = true;
+      btn.textContent = 'Шалгаж байна...';
+      errEl.style.display = 'none';
+
+      try {
+        const res  = await fetch('/api/verify-passcode', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ passcode })
+        });
+        const data = await res.json();
+        if (data.success) {
+          window.location.href = '/';
+        } else {
+          errEl.textContent = '&#10060; ' + (data.error || 'Буруу нууц код!');
+          errEl.style.display = 'block';
+          document.getElementById('passcode').value = '';
+          document.getElementById('passcode').focus();
+          btn.disabled = false;
+          btn.textContent = 'Нэвтрэх';
+        }
+      } catch (e) {
+        errEl.textContent = '&#10060; Серверт холбогдож чадсангүй.';
+        errEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Нэвтрэх';
+      }
+    }
+  </script>
+</body>
+</html>
