@@ -1096,8 +1096,10 @@ function sendSelected() {
 function renderBulkModal() {
   const bodyEl = document.getElementById('bulkBody');
   document.getElementById('bulkInfo').textContent = bulkQueue.length + ' хүнд илгээх гэж байна';
-  document.getElementById('bulkSendBtn').disabled = false;
-  document.getElementById('bulkSendBtn').textContent = '📧 Илгээх';
+  const bulkBtn = document.getElementById('bulkSendBtn');
+  bulkBtn.disabled = false;
+  bulkBtn.textContent = '📧 Илгээх';
+  bulkBtn.onclick = executeBulkSend;
 
   bodyEl.innerHTML = bulkQueue.map((item, idx) => {
     const statusIcon = item.status === 'pending' ? '⏳' : item.status === 'sending' ? '🔄' : item.status === 'done' ? '✅' : '❌';
