@@ -470,6 +470,19 @@
     .report-tbl tbody tr:hover td { background: #f8fafc; }
     .report-tbl tfoot td { background: #f1f5f9; font-weight: 700; border-top: 2px solid #e2e8f0; }
 
+    /* ── HISTORY TABS ── */
+    .hist-tabs {
+      display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px;
+    }
+    .hist-tab {
+      padding: 7px 14px; border: 1px solid #e2e8f0; border-radius: 6px;
+      background: #f8fafc; color: #475569; font-size: 0.8em; font-weight: 600;
+      cursor: pointer; transition: all 0.15s; white-space: nowrap;
+    }
+    .hist-tab:hover { background: #f1f5f9; border-color: #cbd5e1; }
+    .hist-tab.active { background: #1e293b; color: #f0f6fc; border-color: #1e293b; }
+    .hist-empty { text-align: center; padding: 28px; color: #94a3b8; font-size: 0.85em; }
+
     @media (max-width: 640px) {
       .app-header { padding: 0 16px; }
       .container { padding: 16px 12px; }
@@ -690,10 +703,9 @@
         <canvas id="reportStacked" style="max-height:220px"></canvas>
       </div>
       <div class="chart-card">
-        <h3>&#128203; Дэлгэрэнгүй хүснэгт</h3>
-        <div style="overflow-x:auto">
-          <table class="report-tbl" id="reportTable"></table>
-        </div>
+        <h3>&#128203; Дэлгэрэнгүй хүснэгт &mdash; Ангилалаар</h3>
+        <div class="hist-tabs" id="histTabs"></div>
+        <div id="histBody"></div>
       </div>
     </div>
     <div class="report-footer">
@@ -764,14 +776,16 @@ let cats     = JSON.parse(localStorage.getItem("snCats")   || "null") || DEFAULT
 let msgTpl   = localStorage.getItem("snMsg")  || DEFAULT_MSG;
 let counts   = JSON.parse(localStorage.getItem("snCounts") || "{}");
 let adminPin = localStorage.getItem("snPin")  || DEFAULT_PIN;
+let history  = JSON.parse(localStorage.getItem("snHistory") || "[]");
 let pendingCheck = null;
 
 function persist() {
-  localStorage.setItem("snPeople", JSON.stringify(people));
-  localStorage.setItem("snCats",   JSON.stringify(cats));
-  localStorage.setItem("snMsg",    msgTpl);
-  localStorage.setItem("snCounts", JSON.stringify(counts));
-  localStorage.setItem("snPin",    adminPin);
+  localStorage.setItem("snPeople",  JSON.stringify(people));
+  localStorage.setItem("snCats",    JSON.stringify(cats));
+  localStorage.setItem("snMsg",     msgTpl);
+  localStorage.setItem("snCounts",  JSON.stringify(counts));
+  localStorage.setItem("snPin",     adminPin);
+  localStorage.setItem("snHistory", JSON.stringify(history));
 }
 
 /* ── COUNTS ── */
@@ -901,13 +915,16 @@ async function sendEmail() {
     const result = await resp.json();
 
     if (result.success) {
-      // Increment count and uncheck for each selected category
+      const p = people[personIdx];
+      const ts = new Date().toISOString();
       catIdxs.forEach(ci => {
         incCount(personIdx, ci);
         refreshBadge(personIdx, ci);
         const cb = document.getElementById(`cb_${personIdx}_${ci}`);
         if (cb) cb.checked = false;
+        history.push({ ts, personName: p.name, personEmail: p.email, catEn: cats[ci]?.en || '', catLabel: cats[ci]?.label || '', catEmoji: cats[ci]?.emoji || '' });
       });
+      localStorage.setItem("snHistory", JSON.stringify(history));
       buildTotals();
       pendingCheck = null;
       document.getElementById("emailOverlay").classList.remove("active");
@@ -1386,10 +1403,13 @@ function openReport() {
   }).join('');
   const catFoot = cats.map((_,ci) => `<td><strong>${cTotals[ci]}</strong></td>`).join('');
 
-  document.getElementById('reportTable').innerHTML = `
-    <thead><tr><th>#</th><th>Нэр / Имэйл</th>${catHeaders}<th>Нийт</th></tr></thead>
-    <tbody>${tableRows}</tbody>
-    <tfoot><tr><td></td><td>НИЙТ ДҮН</td>${catFoot}<td><strong>${grandTotal}</strong></td></tr></tfoot>`;
+  // Build history tabs
+  const tabsEl = document.getElementById('histTabs');
+  tabsEl.innerHTML = cats.map((cat, ci) => {
+    const cnt = history.filter(h => h.catEn === cat.en).length;
+    return `<button class="hist-tab${ci===0?' active':''}" onclick="switchHistTab(${ci})">${cat.emoji} ${cat.en} <span style="background:#e2e8f0;border-radius:4px;padding:1px 6px;margin-left:4px;font-size:0.9em">${cnt}</span></button>`;
+  }).join('');
+  switchHistTab(0);
 
   document.getElementById('reportFooterInfo').textContent =
     'Нийт: ' + grandTotal + ' мэдэгдэл  |  Идэвхтэй ажилтан: ' + activeStaff + ' / ' + people.length;
@@ -1403,6 +1423,37 @@ function openReport() {
 
 function closeReport() {
   document.getElementById('reportOverlay').classList.remove('active');
+}
+
+function switchHistTab(ci) {
+  document.querySelectorAll('.hist-tab').forEach((b,i) => b.classList.toggle('active', i===ci));
+  const cat = cats[ci];
+  const rows = history
+    .filter(h => h.catEn === cat.en)
+    .sort((a,b) => b.ts.localeCompare(a.ts));
+
+  const bodyEl = document.getElementById('histBody');
+  if (rows.length === 0) {
+    bodyEl.innerHTML = `<div class="hist-empty">&#128202; ${cat.emoji} ${cat.en} — Одоогоор мэдэгдэл байхгүй байна</div>`;
+    return;
+  }
+
+  const trHTML = rows.map((r, idx) => {
+    const d = new Date(r.ts);
+    const dateStr = d.toLocaleDateString('mn-MN');
+    const timeStr = d.toLocaleTimeString('mn-MN', { hour: '2-digit', minute: '2-digit' });
+    return `<tr>
+      <td style="color:#94a3b8;font-size:0.82em">${idx+1}</td>
+      <td><strong>${escHtml(r.personName)}</strong><br><small style="color:#94a3b8">${escHtml(r.personEmail)}</small></td>
+      <td><span style="font-weight:600;color:#0f172a">${dateStr}</span></td>
+      <td style="color:#475569">${timeStr}</td>
+    </tr>`;
+  }).join('');
+
+  bodyEl.innerHTML = `<div style="overflow-x:auto"><table class="report-tbl">
+    <thead><tr><th>#</th><th>Нэр / Имэйл</th><th>Огноо</th><th>Цаг</th></tr></thead>
+    <tbody>${trHTML}</tbody>
+  </table></div>`;
 }
 
 function renderReportCharts() {
