@@ -1171,6 +1171,7 @@ function closeBulkSend() {
 function resetAll() {
   if (!confirm("Бүх тоолуурыг тэглэх үү?")) return;
   counts = {}; localStorage.setItem("snCounts", JSON.stringify(counts));
+  history = []; localStorage.setItem("snHistory", JSON.stringify(history));
   buildTable(); showToast("↺ Бүх тоолуурыг дахиуллаа");
 }
 
